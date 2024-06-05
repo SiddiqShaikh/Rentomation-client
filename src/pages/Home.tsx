@@ -22,7 +22,8 @@ const Home: React.FC<HomeInterfaceProps> = () => {
         <IntroComponent />
         <KnowAboutUs />
         <HowItWork />
-        <PopularResidence/>
+        <PopularResidence />
+        <div>Hello</div>
       </div>
     </div>
   );
@@ -61,9 +62,7 @@ const KnowAboutUs = () => {
   return (
     <Container>
       <div className="text-white mt-12 relative ">
-        <div className="text-center text-3xl md:text-4xl ">
-          Know About Us
-        </div>
+        <div className="text-center text-3xl md:text-4xl ">Know About Us</div>
         <div className="flex flex-col md:flex-row items-center mt-6 gap-3 justify-center md:justify-start ">
           {/* <div className="w-[300px] absolute border border-white top-20 left-72 rounded-lg overflow-hidden">
             <div className="bg-white text-black p-2 flex items-center gap-2">
@@ -116,9 +115,7 @@ const HowItWork = () => {
   return (
     <Container>
       <div className="text-white mt-12">
-        <div className="text-center text-3xl md:text-4xl ">
-          How It Works
-        </div>
+        <div className="text-center text-3xl md:text-4xl ">How It Works</div>
         <div className="flex flex-wrap items-center gap-5 justify-between mt-6">
           {howItWorks.map((item) => (
             <HowItWorksCard data={item} />
@@ -136,8 +133,30 @@ const PopularResidence = () => {
         <div className="text-center text-3xl md:text-4xl ">
           Popular Residence
         </div>
-        <div>Cards</div>
+        <div className="mt-8 flex gap-5 items-center flex-wrap justify-between">
+          <ResidenceCard />
+          <ResidenceCard />
+          <ResidenceCard />
+
+        </div>
       </div>
     </Container>
+  );
+};
+
+const ResidenceCard = () => {
+  return (
+    <div className="glass-card shadow-card w-80 py-2 px-4 space-y-4 rounded-lg shadow-2xl">
+      <div className="h-32 max-w-full rounded-md overflow-hidden">
+        <img
+          alt="image"
+          src="/images/home.webp"
+          className="w-full h-full object-fill"
+        />
+      </div>
+      <div className="text-btnPrimary text-2xl">Dream Resort</div>
+      <div className="text-sm">Property Desc</div>
+      <div className="text-md font-semibold">Rent: 1000PKR/Day</div>
+    </div>
   );
 };

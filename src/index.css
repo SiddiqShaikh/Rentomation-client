@@ -5,3 +5,27 @@
 body {
   font-family: 'Nunito', sans-serif;
 }
+
+.glass-card {
+  /* background: rgba(255, 255, 255, 0.1);  */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 
+              0 6px 20px rgba(0, 0, 0, 0.19); /* Box shadow */
+  backdrop-filter: blur(10px); /* Blur effect */
+  -webkit-backdrop-filter: blur(10px); /* Blur effect for Safari */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+  overflow: hidden; /* Ensure the image and content fit within the card */
+  color: #fff; /* White text for readability */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for transform and box-shadow */
+}
+
+.glass-card:hover {
+  transform: scale(1.05); /* Slight scale up on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 
+              0 12px 40px rgba(0, 0, 0, 0.25); /* Enhanced shadow on hover */
+}
+
+.glass-card img {
+  border-top-left-radius: 10px; /* Match card border radius */
+  border-top-right-radius: 10px;
+}
