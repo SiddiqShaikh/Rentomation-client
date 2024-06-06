@@ -13,10 +13,10 @@ const Navbar: React.FC<NavbarProps> = () => {
             <Logo />
           </div>
           <div className="flex-1 items-center gap-2 md:gap-6 md:flex hidden">
-            <div>Home</div>
-            <div>Rentomation</div>
-            <div>About</div>
-            <div>Contact</div>
+            <div className="cursor-pointer hover:text-btnPrimary">Home</div>
+            <div className="cursor-pointer hover:text-btnPrimary">Rentomation</div>
+            <div className="cursor-pointer hover:text-btnPrimary">About</div>
+            <div className="cursor-pointer hover:text-btnPrimary">Contact</div>
           </div>
           <div className="hidden md:flex">
             <Button
@@ -33,5 +33,3 @@ const Navbar: React.FC<NavbarProps> = () => {
   );
 };
 export default Navbar;
-
-

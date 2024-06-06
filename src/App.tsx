@@ -3,6 +3,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Layout/Navbar";
+import Footer from "./components/Layout/Footer";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/contact" /> */}
         </Routes>
       </Router>
+      <Footer />
     </>
   );
 }
