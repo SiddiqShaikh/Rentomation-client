@@ -4,10 +4,13 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Layout/Navbar";
 import Footer from "./components/Layout/Footer";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <>
+      <ToastContainer />
       <Navbar />
       <Router>
         <Routes>
