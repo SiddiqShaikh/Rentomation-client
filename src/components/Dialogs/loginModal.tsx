@@ -18,6 +18,7 @@ interface IModalProps {
 }
 const Modal = ({ open, setOpen }: IModalProps) => {
   let [openRegister, setOpenRegister] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -28,19 +29,22 @@ const Modal = ({ open, setOpen }: IModalProps) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     console.log(formData);
   };
+
   const onHandleLogin = async () => {
-    console.log(formData, "formdata");
+    setLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:8000/api/v1/user/login",
         formData
       );
-      console.log(response);
+      setLoading(false);
+      localStorage.setItem("auth-token", response.data.token);
       toast.success(response?.data?.message);
       setOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       toast.error(error?.response?.data?.message);
+      setLoading(false);
     }
   };
   return (
@@ -90,6 +94,7 @@ const Modal = ({ open, setOpen }: IModalProps) => {
                       className="justify-center inline-flex items-center gap-2 bg-btnPrimary py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
                       onClick={() => onHandleLogin()}
                       label="Login"
+                      loading={loading}
                     />
                   </div>
                   <div className="mt-4 ">

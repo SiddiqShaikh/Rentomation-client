@@ -1,11 +1,11 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import "./App.css";
-import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
-import Navbar from "./components/Layout/Navbar";
-import Footer from "./components/Layout/Footer";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import "./App.css";
+import Footer from "./components/Layout/Footer";
+import Navbar from "./components/Layout/Navbar";
+import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (

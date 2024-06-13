@@ -5,4 +5,5 @@ export interface ButtonProps {
   className?: string;
   label?: string;
   onClick?: any;
+  loading?: Boolean;
 }

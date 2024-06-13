@@ -5,19 +5,19 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
+import axios from "axios";
 import { SetStateAction, useState } from "react";
+import { toast } from "react-toastify";
 import Button from "../Button";
 import Input from "../Input";
-import Modal from "./loginModal";
-import axios from "axios";
-import { toast } from "react-toastify";
 
 interface IModalProps {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 }
+
 const RegisterModal = ({ open, setOpen }: IModalProps) => {
-  const [openLogin, setOpenLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -32,7 +32,7 @@ const RegisterModal = ({ open, setOpen }: IModalProps) => {
     console.log(formData);
   };
   const onHandleRegister = async () => {
-    console.log(formData, "formdata");
+    setLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:8000/api/v1/user/register",
@@ -40,10 +40,12 @@ const RegisterModal = ({ open, setOpen }: IModalProps) => {
       );
       console.log(response);
       toast.success(response?.data?.message);
+      setLoading(false);
       setOpen(false);
-    } catch (error) {
-      console.log(error?.response?.data?.message);
-      toast.error(error?.response?.data?.message);
+    } catch (error:any) {
+      // console.log(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message) 
+      setLoading(false);
     }
   };
   return (
@@ -108,6 +110,7 @@ const RegisterModal = ({ open, setOpen }: IModalProps) => {
                       className="justify-center inline-flex items-center gap-2 bg-btnPrimary py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
                       onClick={() => onHandleRegister()}
                       label="Register"
+                      loading={loading}
                     />
                   </div>
                   <div className="mt-4 ">
@@ -116,7 +119,7 @@ const RegisterModal = ({ open, setOpen }: IModalProps) => {
                       <span
                         className="text-btnPrimary cursor-pointer hover:underline"
                         onClick={() => {
-                          setOpenLogin(true);
+                          // setOpenLogin(true);
                           setOpen(false);
                         }}
                       >
