@@ -5,6 +5,7 @@ import { HomeInterfaceProps } from "../types/commonInterface";
 
 import HowItWorksCard from "../components/cards/HowItWorksCard";
 import { howItWorks } from "../utils/mock";
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC<HomeInterfaceProps> = () => {
   return (
@@ -137,7 +138,6 @@ const PopularResidence = () => {
           <ResidenceCard />
           <ResidenceCard />
           <ResidenceCard />
-
         </div>
       </div>
     </Container>
@@ -145,8 +145,12 @@ const PopularResidence = () => {
 };
 
 const ResidenceCard = () => {
+  const navigate = useNavigate();
   return (
-    <div className="glass-card shadow-card w-80 py-2 px-4 space-y-4 rounded-lg shadow-2xl hover:cursor-pointer">
+    <div
+      className="glass-card shadow-card w-80 py-2 px-4 space-y-4 rounded-lg shadow-2xl hover:cursor-pointer"
+      onClick={() => navigate("/property/id")}
+    >
       <div className="h-32 max-w-full rounded-md overflow-hidden">
         <img
           alt="image"

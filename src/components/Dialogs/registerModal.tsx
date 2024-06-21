@@ -43,7 +43,6 @@ const RegisterModal = ({ open, setOpen }: IModalProps) => {
       setLoading(false);
       setOpen(false);
     } catch (error:any) {
-      // console.log(error?.response?.data?.message);
       toast.error(error?.response?.data?.message) 
       setLoading(false);
     }

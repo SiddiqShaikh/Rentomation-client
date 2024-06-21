@@ -8,7 +8,7 @@ interface IFooterProps {}
 
 const Footer: React.FC<IFooterProps> = () => {
   return (
-    <div className="bg-black text-white w-full">
+    <div className="bg-black text-white w-full mt-8">
       <hr />
       <Container>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 place-items-center md:place-items-start py-8">

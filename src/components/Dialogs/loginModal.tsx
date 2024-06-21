@@ -25,7 +25,6 @@ const Modal = ({ open, setOpen }: IModalProps) => {
   });
   //   let [isOpen, setIsOpen] = useState(false)
   const onHandleChange = (e: any) => {
-    // console.log(e.target.value, e.target.name);
     setFormData({ ...formData, [e.target.name]: e.target.value });
     console.log(formData);
   };
