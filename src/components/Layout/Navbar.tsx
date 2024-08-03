@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NavbarProps } from "../../types/commonInterface";
 import Button from "../Button";
 import Container from "../Container";
 
 import useLoginModal from "../../hooks/loginModal";
+import useUserStatus from "../../hooks/userStatus";
 import apiCall from "../../utils/api";
 import Logo from "../Logo";
 import UserMenu from "./Usermenu";
-import useUserStatus from "../../hooks/userStatus";
 
 const Navbar: React.FC<NavbarProps> = () => {
   const loginModal = useLoginModal();
   const userStatus = useUserStatus();
   const token = localStorage.getItem("auth-token");
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
   const headers = {
     "x-auth-token": `Bearer ${token}`,
     "Content-Type": "application/json",
