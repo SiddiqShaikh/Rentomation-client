@@ -5,25 +5,22 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import useLoginModal from "../../hooks/loginModal";
+import useRegisterModal from "../../hooks/registerModal";
+import apiCall from "../../utils/api";
 import Button from "../Button";
 import Input from "../Input";
-import RegisterModal from "./registerModal";
-import { toast } from "react-toastify";
-import axios from "axios";
 
-interface IModalProps {
-  open: boolean;
-  setOpen: React.Dispatch<SetStateAction<boolean>>;
-}
-const Modal = ({ open, setOpen }: IModalProps) => {
-  let [openRegister, setOpenRegister] = useState(false);
+const LoginModal = () => {
+  const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  //   let [isOpen, setIsOpen] = useState(false)
   const onHandleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     console.log(formData);
@@ -31,29 +28,28 @@ const Modal = ({ open, setOpen }: IModalProps) => {
 
   const onHandleLogin = async () => {
     setLoading(true);
+
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/user/login",
-        formData
-      );
+      const response = await apiCall("user/login", "POST", formData);
+      console.log("Login successful:", response);
+      localStorage.setItem("auth-token", response.token);
       setLoading(false);
-      localStorage.setItem("auth-token", response.data.token);
       toast.success(response?.data?.message);
-      setOpen(false);
+      loginModal.onClose();
     } catch (error: any) {
-      console.log(error);
       toast.error(error?.response?.data?.message);
       setLoading(false);
+      console.error("Login error:", error);
     }
   };
   return (
     <>
-      <RegisterModal open={openRegister} setOpen={setOpenRegister} />
-      <Transition appear show={open}>
+      {/* <RegisterModal open={openRegister} setOpen={setOpenRegister} /> */}
+      <Transition appear show={loginModal.isOpen}>
         <Dialog
           as="div"
           className="relative z-10 focus:outline-none"
-          onClose={() => setOpen(false)}
+          onClose={() => loginModal.onClose()}
         >
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4">
@@ -102,8 +98,8 @@ const Modal = ({ open, setOpen }: IModalProps) => {
                       <span
                         className="text-btnPrimary cursor-pointer hover:underline"
                         onClick={() => {
-                          setOpenRegister(true);
-                          setOpen(false);
+                          registerModal.onOpen();
+                          loginModal.onClose();
                         }}
                       >
                         Register
@@ -120,4 +116,4 @@ const Modal = ({ open, setOpen }: IModalProps) => {
   );
 };
 
-export default Modal;
+export default LoginModal;
