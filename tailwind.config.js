@@ -17,7 +17,7 @@ export default {
         // Define your custom colors here
         primary: "#151110",
         mainBg: "#151110",
-        btnPrimary: "#E1AD1D",
+        btnPrimary: "#F4511E",
         secondary: {
           100: "#E2E2D5",
           200: "#888883",

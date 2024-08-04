@@ -1,19 +1,31 @@
 import React from "react";
+import Masonry from "react-responsive-masonry";
+
 import Button from "../components/Button";
 import Container from "../components/Container";
 import { HomeInterfaceProps } from "../types/commonInterface";
 
-import HowItWorksCard from "../components/cards/HowItWorksCard";
-import { howItWorks } from "../utils/mock";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+// import HowItWorksCard from "../components/cards/HowItWorksCard";
+// import { howItWorks } from "../utils/mock";
+import Input from "../components/Input";
 
 const Home: React.FC<HomeInterfaceProps> = () => {
   return (
-    <div className="bg-black w-full min-h-[100vh] relative">
+    <div className="w-full min-h-[100vh] relative">
       <div
-        className="absolute w-full h-[800px] z-[1]"
+        className="absolute inset-0 h-[800px] z-[1]"
         style={{
-          backgroundImage: `url(/images/home.webp)`,
+          backgroundImage: `url(/images/home.png)`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <div
+        className="absolute inset-0 h-[800px] z-[2]"
+        style={{
+          backgroundImage: `url(/images/home-lg.png)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -22,9 +34,10 @@ const Home: React.FC<HomeInterfaceProps> = () => {
       <div className="relative z-[2]">
         <IntroComponent />
         <KnowAboutUs />
+        <SearchRoom />
+        {/* <KnowAboutUs />
         <HowItWork />
-        <PopularResidence />
-        <div>Hello</div>
+        <PopularResidence /> */}
       </div>
     </div>
   );
@@ -35,25 +48,111 @@ export default Home;
 const IntroComponent = () => {
   return (
     <Container>
-      <div className="text-white flex h-[800px] justify-center items-center">
-        <div className="flex-1 px-2 md:text-start text-center">
-          <div className="w-full max-w-[550px] text-3xl md:text-4xl ">
-            Find Your Next Perfect Place to live
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-center items-center text-white h-[800px]">
+        <div className="lg:flex-1 px-2 lg:text-start text-center">
+          <div className="w-full max-w-[550px] font-bold text-5xl">
+            Find your next and most affortable perfect place to live
           </div>
-          <div className="w-full max-w-[550px] text-sm sm:text-md md:text-lg">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe
-            temporibus tenetur iure culpa, minima magnam exercitationem enim
-            porro maxime voluptatem odio aliquam quo. Minima fuga magnam at
-            quisquam voluptas veniam.
-          </div>
-          <div className="mt-6">
+        </div>
+        <div className="lg:flex-1 w-full  px-2 md:px-0">
+          <div className="max-w-[500px] w-full mx-auto flex ">
+            <Input
+              placeholder="Search"
+              containerClass=" flex-1 !rounded-r-none rounded-md border border-white border-r-0 "
+              inputClass="placeholder-white "
+            />
             <Button
-              label="Show properties"
-              className="max-w-[300px] inline-flex justify-center hover:bg-neutral-400"
+              label="Search"
+              className="max-w-[100px] inline-flex justify-center !rounded-l-none rounded-md py-2"
             />
           </div>
         </div>
-        {/* <div className="flex-1 hidden md:flex">Image Div</div> */}
+      </div>
+    </Container>
+  );
+};
+
+const SearchRoom = () => {
+  return (
+    <Container>
+      <div className="flex flex-col-reverse lg:flex-row my-28 gap-y-4">
+        {/* images container */}
+        <div className="flex-1">
+          <Masonry columnsCount={2} gutter="10px">
+            <div className="relative">
+              <img
+                // key={i}
+                src="/images/showroom4.png"
+                style={{ width: "100%", display: "block" }}
+                alt=""
+              />
+              <div className="absolute top-7 text-white w-full  ">
+                <div className="w-full max-w-[268px] text-center mx-auto text-xl sm:text-2xl md:text-4xl  font-semibold">
+                  Flexible lease
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                // key={i}
+                src="/images/showroom2.png"
+                style={{ width: "100%", display: "block" }}
+                alt=""
+              />
+
+              <div className="absolute top-7 text-white w-full  ">
+                <div className="w-full max-w-[300px] text-center mx-auto  text-xl sm:text-2xl md:text-4xl  font-semibold">
+                  7-Day Happiness Guaranteed
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                // key={i}
+                src="/images/showroom3.png"
+                style={{ width: "100%", display: "block" }}
+                alt=""
+              />
+
+              <div className="absolute top-7 text-white w-full  ">
+                <div className="w-full max-w-[268px] text-center mx-auto  text-xl sm:text-2xl md:text-4xl  font-semibold">
+                  Monthly House Cleaning
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                // key={i}
+                src="/images/showroom1.png"
+                style={{ width: "100%", display: "block" }}
+                alt=""
+              />
+              <div className="absolute top-7 text-white w-full  ">
+                <div className="w-full max-w-[268px] text-center mx-auto  text-xl sm:text-2xl md:text-4xl  font-semibold">
+                  Choose Your Own Roommate
+                </div>
+              </div>
+            </div>
+          </Masonry>
+        </div>
+        {/* description container */}
+        <div className="flex-1 flex items-center lg:pl-16">
+          <div>
+            <div className="text-4xl font-extrabold max-w-[444px]">
+              Flexibility and options to suit your lifestyle.
+            </div>
+            <div className="mt-4 max-w-[444px]">
+              You need it? We got it. We make finding your next home easy,
+              comfortable, and simple. From our happiness guarantee to our
+              selective roommate finder option. We provide you the flexibility
+              that you most desire.
+            </div>
+            <Button
+              label="Search Rooms"
+              className="max-w-44 w-full py-4 text-white inline-flex justify-center mt-10 rounded-xl"
+            />
+          </div>
+        </div>
       </div>
     </Container>
   );
@@ -62,105 +161,125 @@ const IntroComponent = () => {
 const KnowAboutUs = () => {
   return (
     <Container>
-      <div className="text-white mt-12 relative ">
-        <div className="text-center text-3xl md:text-4xl ">Know About Us</div>
-        <div className="flex flex-col md:flex-row items-center mt-6 gap-3 justify-center md:justify-start ">
-          {/* <div className="w-[300px] absolute border border-white top-20 left-72 rounded-lg overflow-hidden">
-            <div className="bg-white text-black p-2 flex items-center gap-2">
-              <Avatar src={null} />
-              <div className="text-sm">
-                we have more than 15 years of experience
+      <div className="my-24">
+        <div className="text-4xl font-extrabold relative ">
+          Minimum living cost takes care of everything
+          <div className="absolute bottom-[-1]  h-1 bg-red-500 w-full max-w-[340px] transition-opacity ease-in-out duration-300 delay-300"></div>
+        </div>
+        <div className="mt-24 flex flex-col lg:flex-row gap-5">
+          <div className="lg:flex-[0.3]">
+            <img
+              src="/images/wilson.jpg"
+              className="max-w-[380px] h-[502px] mx-auto w-full object-contain lg:object-cover rounded-tl-3xl rounded-bl-3xl"
+            />
+          </div>
+          <div className="lg:flex-1  w-full py-11">
+            <div className="grid grid-cols-3 gap-y-24 gap-x-6 md:gap-x-12">
+              <div>
+                <div className="w-20 h-20 shadow-lg flex items-center justify-center rounded-md">
+                  <img src="/images/dollar.svg" className=" object-cover" />
+                </div>
+                <div className="text-xl font-semibold mt-5">
+                  Pay as Little as possible!
+                </div>
+              </div>
+              <div>
+                <div className="w-20 h-20 shadow-lg flex items-center justify-center rounded-md">
+                  <img src="/images/house.svg" className=" object-cover" />
+                </div>
+                <div className="text-xl font-semibold mt-5">
+                  Enjoy wisdom of community!
+                </div>
+              </div>
+              <div>
+                <div className="w-20 h-20 shadow-lg flex items-center justify-center rounded-md">
+                  <img src="/images/redis.svg" className=" object-cover" />
+                </div>
+                <div className="text-xl font-semibold mt-5">
+                  Let's somebody else take care of Landlord!
+                </div>
+              </div>
+              <div>
+                <div className="w-20 h-20 shadow-lg flex items-center justify-center rounded-md">
+                  <img src="/images/plant.svg" className=" object-cover" />
+                </div>
+                <div className="text-xl font-semibold mt-5">
+                  Enjoy peaceful Environment!
+                </div>
+              </div>
+              <div>
+                <div className="w-20 h-20 shadow-lg flex items-center justify-center rounded-md">
+                  <img src="/images/protect.svg" className=" object-cover" />
+                </div>
+                <div className="text-xl font-semibold mt-5">
+                  Stay Safe! Save Money!
+                </div>
+              </div>
+              <div>
+                <div className="w-20 h-20 shadow-lg flex items-center justify-center rounded-md">
+                  <img src="/images/eye.svg" className=" object-cover" />
+                </div>
+                <div className="text-xl font-semibold mt-5">
+                  Pay for what you use !
+                </div>
               </div>
             </div>
           </div>
-          <div className="w-[150px] absolute border border-white top-80 -left-9 rounded-lg overflow-hidden">
-            <div className="bg-white text-black p-2 flex items-center gap-2">
-              <Avatar src={null} />
-              <div className="text-sm">Reviews</div>
-            </div>
-          </div> */}
-          <div className="flex-1 ">
-            <div className="rounded-lg border border-neutral-800 overflow-hidden max-w-[500px] max-h-[300px]">
-              <img
-                alt="image"
-                src="/images/home.webp"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            {/*  */}
-          </div>
-          <div className="flex-1 space-y-1 md:space-y-2  mt-4 md:mt-0 md:px-2">
-            <div className="text-center md:text-start text-xl md:text-2xl lg:text-4xl leading-normal">
-              We are creating best communities to ease in accomodation
-            </div>
-            <div className="text-sm text-neutral-400">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-              Praesentium officia cupiditate, vitae quos iusto illo tempora,
-              exercitationem impedit quam inventore, enim ex? Eum similique
-              natus illum obcaecati velit iste laudantium?
-            </div>
-            <div className="flex justify-center md:justify-start">
-              <Button
-                label="Read More"
-                className="max-w-[120px] inline-flex justify-center !bg-transparent border border-btnPrimary hover:text-btnPrimary"
-              />
-            </div>
-          </div>
         </div>
       </div>
     </Container>
   );
 };
 
-const HowItWork = () => {
-  return (
-    <Container>
-      <div className="text-white mt-12">
-        <div className="text-center text-3xl md:text-4xl ">How It Works</div>
-        <div className="flex flex-wrap items-center gap-5 justify-between mt-6">
-          {howItWorks.map((item) => (
-            <HowItWorksCard data={item} />
-          ))}
-        </div>
-      </div>
-    </Container>
-  );
-};
+// const HowItWork = () => {
+//   return (
+//     <Container>
+//       <div className="text-white mt-12">
+//         <div className="text-center text-3xl md:text-4xl ">How It Works</div>
+//         <div className="flex flex-wrap items-center gap-5 justify-between mt-6">
+//           {howItWorks.map((item) => (
+//             <HowItWorksCard data={item} />
+//           ))}
+//         </div>
+//       </div>
+//     </Container>
+//   );
+// };
 
-const PopularResidence = () => {
-  return (
-    <Container>
-      <div className="text-white mt-12">
-        <div className="text-center text-3xl md:text-4xl ">
-          Popular Residence
-        </div>
-        <div className="mt-8 flex gap-5 items-center flex-wrap justify-between">
-          <ResidenceCard />
-          <ResidenceCard />
-          <ResidenceCard />
-        </div>
-      </div>
-    </Container>
-  );
-};
+// const PopularResidence = () => {
+//   return (
+//     <Container>
+//       <div className="text-white mt-12 pb-8">
+//         <div className="text-center text-3xl md:text-4xl ">
+//           Popular Residence
+//         </div>
+//         <div className="mt-8 flex gap-5 items-center flex-wrap justify-between">
+//           <ResidenceCard />
+//           <ResidenceCard />
+//           <ResidenceCard />
+//         </div>
+//       </div>
+//     </Container>
+//   );
+// };
 
-const ResidenceCard = () => {
-  const navigate = useNavigate();
-  return (
-    <div
-      className="glass-card shadow-card w-80 py-2 px-4 space-y-4 rounded-lg shadow-2xl hover:cursor-pointer"
-      onClick={() => navigate("/property/id")}
-    >
-      <div className="h-32 max-w-full rounded-md overflow-hidden">
-        <img
-          alt="image"
-          src="/images/home.webp"
-          className="w-full h-full object-fill"
-        />
-      </div>
-      <div className="text-btnPrimary text-2xl">Dream Resort</div>
-      <div className="text-sm">Property Desc</div>
-      <div className="text-md font-semibold">Rent: 1000PKR/Day</div>
-    </div>
-  );
-};
+// const ResidenceCard = () => {
+//   const navigate = useNavigate();
+//   return (
+//     <div
+//       className="glass-card shadow-card w-80 py-2 px-4 space-y-4 rounded-lg shadow-2xl hover:cursor-pointer"
+//       onClick={() => navigate("/property/id")}
+//     >
+//       <div className="h-32 max-w-full rounded-md overflow-hidden">
+//         <img
+//           alt="image"
+//           src="/images/home.webp"
+//           className="w-full h-full object-fill"
+//         />
+//       </div>
+//       <div className="text-btnPrimary text-2xl">Dream Resort</div>
+//       <div className="text-sm">Property Desc</div>
+//       <div className="text-md font-semibold">Rent: 1000PKR/Day</div>
+//     </div>
+//   );
+// };

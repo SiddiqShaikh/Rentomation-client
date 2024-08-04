@@ -11,7 +11,7 @@ const UserMenu: React.FC<UserMenuProps> = () => {
     setIsOpen((value) => !value);
   }, []);
   return (
-    <div className="flex items-center px-2 py-1 rounded-xl gap-2 border-[1px] border-neutral-200 cursor-pointer hover:shadow-sm">
+    <div className="flex items-center px-2 py-1 rounded-xl gap-2 border-[1px] border-neutral-200 cursor-pointer hover:shadow-sm ">
       <div className="" onClick={toggleOpen}>
         <AiOutlineMenu />
       </div>
@@ -19,7 +19,7 @@ const UserMenu: React.FC<UserMenuProps> = () => {
         <Avatar src={null} />
       </div>
       {isOpen && (
-        <div className="absolute rounded-xl shadow-md w-[40vw] md:w-3/4 bg-white overflow-hidden right-2 top-14 text-sm z-20">
+        <div className="absolute rounded-xl shadow-md w-[40vw] md:w-3/4 bg-black bg-opacity-20 text-white overflow-hidden right-2 top-14 text-sm z-20">
           <div className="flex flex-col cursor-pointer">
             <>
               <MenuItem label="My trips" onClick={() => {}} />

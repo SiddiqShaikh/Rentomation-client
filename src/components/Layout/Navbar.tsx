@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavbarProps } from "../../types/commonInterface";
 import Button from "../Button";
 import Container from "../Container";
@@ -17,6 +17,19 @@ const Navbar: React.FC<NavbarProps> = () => {
     "x-auth-token": `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) { // Adjust the scroll threshold as needed
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   useEffect(() => {
    
     apiCall("user/profile", "GET", null, null, headers)
@@ -30,19 +43,19 @@ const Navbar: React.FC<NavbarProps> = () => {
       });
   }, [token]);
   return (
-    <div className="w-full bg-black text-white">
+    <div className={`w-full fixed z-[3] text-white shadow-md transition-all ease-in-out duration-300 ${isScrolled ? 'bg-black bg-opacity-20' : 'bg-transparent'}`}>
       <Container>
         <div className="flex items-center py-4">
           <div className="flex-1 md:flex-[0.6]">
             <Logo />
           </div>
           <div className="flex-1 items-center gap-2 md:gap-6 md:flex hidden">
-            <div className="cursor-pointer hover:text-btnPrimary">Home</div>
-            <div className="cursor-pointer hover:text-btnPrimary">
+            <div className="cursor-pointer hover:text-[#F4511E]">Home</div>
+            <div className="cursor-pointer hover:text-[#F4511E]">
               Rentomation
             </div>
-            <div className="cursor-pointer hover:text-btnPrimary">About</div>
-            <div className="cursor-pointer hover:text-btnPrimary">Contact</div>
+            <div className="cursor-pointer hover:text-[#F4511E]">About</div>
+            <div className="cursor-pointer hover:text-[#F4511E]">Contact</div>
           </div>
           <div className="hidden md:flex">
             {!userStatus.isLoggedIn ? (
@@ -53,7 +66,7 @@ const Navbar: React.FC<NavbarProps> = () => {
               />
             ) : (
               <div className="w-full flex gap-2 items-center">
-                <div className="cursor-pointer hover:underline hover:text-btnPrimary text-sm ">
+                <div className="cursor-pointer hover:underline hover:text-[#F4511E] text-sm ">
                   My Properties
                 </div>
                 <Button

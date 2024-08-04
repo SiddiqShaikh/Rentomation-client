@@ -14,10 +14,10 @@ function App() {
   return (
     <>
       <ToastContainer />
-      <Navbar />
       <Router>
-        <LoginModal/>
-        <RegisterModal/>
+        <Navbar />
+        <LoginModal />
+        <RegisterModal />
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/property/:id" Component={Property} />
