@@ -13,9 +13,9 @@ import RegisterModal from "./components/Dialogs/registerModal";
 function App() {
   return (
     <>
-      <ToastContainer />
       <Router>
         <Navbar />
+        <ToastContainer />
         <LoginModal />
         <RegisterModal />
         <Routes>
@@ -25,8 +25,8 @@ function App() {
           {/* <Route path="/about"  />
         <Route path="/contact" /> */}
         </Routes>
+        <Footer />
       </Router>
-      <Footer />
     </>
   );
 }

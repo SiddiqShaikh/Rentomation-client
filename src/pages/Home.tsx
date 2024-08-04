@@ -7,7 +7,7 @@ import { HomeInterfaceProps } from "../types/commonInterface";
 
 // import { useNavigate } from "react-router-dom";
 // import HowItWorksCard from "../components/cards/HowItWorksCard";
-// import { howItWorks } from "../utils/mock";
+import { IPropertyData, propertyData } from "../utils/mock";
 import Input from "../components/Input";
 
 const Home: React.FC<HomeInterfaceProps> = () => {
@@ -34,6 +34,7 @@ const Home: React.FC<HomeInterfaceProps> = () => {
       <div className="relative z-[2]">
         <IntroComponent />
         <KnowAboutUs />
+        <PopularResidence />
         <SearchRoom />
         {/* <KnowAboutUs />
         <HowItWork />
@@ -246,40 +247,57 @@ const KnowAboutUs = () => {
 //   );
 // };
 
-// const PopularResidence = () => {
-//   return (
-//     <Container>
-//       <div className="text-white mt-12 pb-8">
-//         <div className="text-center text-3xl md:text-4xl ">
-//           Popular Residence
-//         </div>
-//         <div className="mt-8 flex gap-5 items-center flex-wrap justify-between">
-//           <ResidenceCard />
-//           <ResidenceCard />
-//           <ResidenceCard />
-//         </div>
-//       </div>
-//     </Container>
-//   );
-// };
+const PopularResidence = () => {
+  return (
+    <Container>
+      <div className="my-16">
+        <div className="flex items-center flex-wrap gap-y-4">
+          <div className="text-4xl font-extrabold relative flex-1 text-nowrap">
+            List of properties
+            <div className="absolute bottom-[-1]  h-1 bg-red-500 w-full max-w-[60px] transition-opacity ease-in-out duration-300 delay-300"></div>
+          </div>
+          <Button
+            label="View All Property"
+            className="max-w-fit min-w-fit w-full py-4 text-white inline-flex justify-center  rounded-xl"
+          />
+        </div>
+        <div className="mt-16 flex flex-wrap gap-y-24 gap-x-8 justify-center md:justify-start ">
+          {propertyData.map((property: IPropertyData) => (
+            <ResidenceCard data={property} />
+          ))}
+        </div>
+      </div>
+    </Container>
+  );
+};
 
-// const ResidenceCard = () => {
-//   const navigate = useNavigate();
-//   return (
-//     <div
-//       className="glass-card shadow-card w-80 py-2 px-4 space-y-4 rounded-lg shadow-2xl hover:cursor-pointer"
-//       onClick={() => navigate("/property/id")}
-//     >
-//       <div className="h-32 max-w-full rounded-md overflow-hidden">
-//         <img
-//           alt="image"
-//           src="/images/home.webp"
-//           className="w-full h-full object-fill"
-//         />
-//       </div>
-//       <div className="text-btnPrimary text-2xl">Dream Resort</div>
-//       <div className="text-sm">Property Desc</div>
-//       <div className="text-md font-semibold">Rent: 1000PKR/Day</div>
-//     </div>
-//   );
-// };
+const ResidenceCard = ({ data }: { data: IPropertyData }) => {
+  // const navigate = useNavigate();
+  return (
+    <div className="w-[358px] rounded-xl shadow-lg overflow-hidden border hover:cursor-pointer hover:scale-105 transition-all duration-300 ease-in-out ">
+      <img src={data.coverImage} className="w-full h-72" />
+
+      <div className="font-bold text-xl mt-4 mx-7">
+        {data.title}
+      </div>
+      <div className="text-lg mt-5 mx-7 text-[#818181]">Private Room</div>
+      <div className="font-bold text-2xl  mx-7 text-[#F4511E] mb-5">
+        PKR{data.rent}/month
+      </div>
+      <div className="border-t border-neutral-200 flex justify-around py-5">
+        <div className="flex items-center gap-2 text-sm font-bold ">
+          <img src="/images/Bed.svg" />
+          <div>{data.bed}</div>
+        </div>
+        <div className="flex items-center gap-2 text-sm font-bold ">
+          <img src="/images/Shower.svg" />
+          <div>{data.shower}</div>
+        </div>
+        <div className="flex items-center gap-2 text-sm font-bold ">
+          <img src="/images/Size.svg" />
+          <div>{data.area}</div>
+        </div>
+      </div>
+    </div>
+  );
+};

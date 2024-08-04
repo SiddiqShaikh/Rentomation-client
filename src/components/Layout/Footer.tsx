@@ -1,72 +1,63 @@
-import { FaFacebook, FaInstagram, FaLinkedin, FaPhone, FaTwitter } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaPhone,
+  FaTwitter,
+} from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 import Container from "../Container";
-import Logo from "../Logo";
-import Button from "../Button";
-import { MdEmail } from "react-icons/md";
 
 interface IFooterProps {}
 
 const Footer: React.FC<IFooterProps> = () => {
   return (
-    <div className="bg-black text-white w-full">
-      <hr />
+    <div className="w-full pb-2">
       <Container>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 place-items-center md:place-items-start py-8">
-          <div>
-            <Logo />
-            <div className="mt-4 text-2xl ">
-              Rento<span className="text-btnPrimary">mation</span>
-            </div>
+        <div className="w-full h-[2px] bg-red-500"></div>
+        <div className="mt-24 flex flex-col lg:flex-row items-center gap-y-12">
+          <div className="flex-1 text-center font-extrabold text-4xl">
+            Rento<span className="text-btnPrimary">mation</span>
           </div>
-          <div>
-            <div className="text-lg mb-4 font-bold">Quick Links</div>
-            <div className="text-sm hover:underline cursor-pointer">
-              Contact us
+          <div className="flex-1">
+            <div className="flex gap-2 items-center">
+              <FaLocationDot size={15} className="text-btnPrimary" /> 345
+              Faulconer Drive, Suite 4 • Charlottesville, CA, 12345
             </div>
-            <div className="text-sm mt-2 hover:underline cursor-pointer">
-              Blogs
-            </div>
-            <div className="text-sm mt-2 hover:underline cursor-pointer">
-              About us
-            </div>
-          </div>
-          <div>
-            <div className="text-lg mb-4 font-bold">Community</div>
-            <div className="text-sm hover:underline cursor-pointer">
-              Contact us
-            </div>
-            <div className="text-sm mt-2 hover:underline cursor-pointer">
-              Blogs
-            </div>
-            <div className="text-sm mt-2 hover:underline cursor-pointer">
-              About us
-            </div>
-          </div>
-          <div>
-            {" "}
-            <div className="text-lg mb-4 font-bold">Subscribe</div>
-            <div className="flex">
-              <input className="bg-transparent border border-neutral-400 border-r-0 rounded-l-2xl py-1 px-2 text-sm overflow-hidden focus:outline-none" />
-              <Button
-                label="subscribe"
-                className="max-w-[100px] rounded-none rounded-r-2xl"
-              />
-            </div>
-            <div className="flex flex-col sm:flex-row mt-2 gap-2 text-sm">
-              <div className="flex gap-2 items-center ">
-                <MdEmail className="text-btnPrimary"/> <div>info@gmail.com</div>
+            <div className="flex items-center gap-x-12 mt-2">
+              <div className="flex gap-2 items-center">
+                <FaPhone size={15} className="text-btnPrimary" />
+                (123) 456-7890
               </div>
-              <div className="flex gap-2 items-center ">
-                <FaPhone  className="text-btnPrimary"/> <div>+1221-123123</div>
+              <div className="flex gap-2 items-center">
+                <FaLocationDot size={15} className="text-btnPrimary" />
+                (123) 456-7890
               </div>
             </div>
-            <div className="flex gap-2 mt-2">
-              <FaInstagram className="text-btnPrimary cursor-pointer" />
-              <FaFacebook className="text-btnPrimary cursor-pointer"/>
-              <FaTwitter className="text-btnPrimary cursor-pointer"/>
-              <FaLinkedin className="text-btnPrimary cursor-pointer"/>
+            <div className="flex gap-x-12 items-center mt-10">
+              <div className="text-[#0A142F] ">Social Media</div>
+              <div className="flex items-center gap-x-8">
+              <FaFacebook size={20} className="text-btnPrimary" />
+              <FaInstagram size={20} className="text-btnPrimary" />
+              <FaLinkedin size={20} className="text-btnPrimary" />
+              <FaTwitter size={20} className="text-btnPrimary" />
+              <FaFacebook size={20} className="text-btnPrimary" />
+
+              </div>
             </div>
           </div>
+      
+        </div>
+        <div className="w-full h-[1px] bg-red-500 max-w-7xl mx-auto mt-20"></div>
+        <div className="w-full max-w-7xl mx-auto mt-6 flex flex-col lg:flex-row items-center gap-y-8">
+          <div className="flex-1 flex items-center gap-x-6 text-sm px-2">
+            <div>ABOUT US</div>
+            <div>CONTACT US</div>
+            <div>PRIVACY POLICY</div>
+            <div>DISCLAIMER</div>
+          </div>
+          <div className="text-sm text-[#0A142F]">Copyright © 2020 Minimumlivingcost. All rights reserved</div>
+
         </div>
       </Container>
     </div>

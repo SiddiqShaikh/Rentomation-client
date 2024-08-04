@@ -34,7 +34,7 @@ const LoginModal = () => {
       console.log("Login successful:", response);
       localStorage.setItem("auth-token", response.token);
       setLoading(false);
-      toast.success(response?.data?.message);
+      toast.success(response?.message);
       loginModal.onClose();
     } catch (error: any) {
       toast.error(error?.response?.data?.message);

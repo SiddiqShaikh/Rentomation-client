@@ -61,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             {!userStatus.isLoggedIn ? (
               <Button
                 label="Login/Register"
-                className="text-white max-w-[200px]"
+                className="text-white max-w-[200px] py-2"
                 onClick={() => loginModal.onOpen()}
               />
             ) : (
