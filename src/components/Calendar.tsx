@@ -11,8 +11,8 @@ const mockBookedRanges = [
 
 const PropertyBookingCalendar: React.FC = () => {
   const [selectedDates, setSelectedDates] = useState<
-    [Date | undefined, Date | undefined]
-  >([undefined, undefined]);
+    [Date | null, Date | null]
+  >([null, null]);
 
   // Function to check if a specific date is within any booked range
   const isDateInBookedRange = (date: Date) => {
@@ -29,9 +29,7 @@ const PropertyBookingCalendar: React.FC = () => {
   };
 
   // Handle the date change
-  const handleDateChange = (
-    dates: [Date | undefined, Date | undefined] | undefined
-  ) => {
+  const handleDateChange = (dates: [Date | null, Date | null] | null) => {
     if (dates) {
       const [start, end] = dates;
 
@@ -40,7 +38,7 @@ const PropertyBookingCalendar: React.FC = () => {
           alert(
             "The selected date range is already booked. Please choose another range."
           );
-          setSelectedDates([undefined, undefined]);
+          setSelectedDates([null, null]);
         } else {
           setSelectedDates([start, end]);
         }
@@ -48,7 +46,7 @@ const PropertyBookingCalendar: React.FC = () => {
         setSelectedDates([start, end]); // Temporarily set until the end date is picked
       }
     } else {
-      setSelectedDates([undefined, undefined]);
+      setSelectedDates([null, null]);
     }
   };
 
@@ -56,10 +54,10 @@ const PropertyBookingCalendar: React.FC = () => {
     <div>
       <h2>Check in-out</h2>
       <DatePicker
-        selected={selectedDates[0]}
+        selected={selectedDates[0]} // Ensure selected is Date | null
         onChange={handleDateChange}
-        startDate={selectedDates[0]}
-        endDate={selectedDates[1]}
+        startDate={selectedDates[0] ?? undefined} // Date | null (not undefined)
+        endDate={selectedDates[1] ?? undefined} // Date | null (not undefined)
         selectsRange
         filterDate={(date) => !isDateInBookedRange(date)}
         minDate={new Date()} // Disable past dates
