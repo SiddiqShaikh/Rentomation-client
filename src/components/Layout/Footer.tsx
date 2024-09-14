@@ -12,7 +12,7 @@ interface IFooterProps {}
 
 const Footer: React.FC<IFooterProps> = () => {
   return (
-    <div className="w-full pb-2">
+    <div className="w-full pb-2 ">
       <Container>
         <div className="w-full h-[2px] bg-red-500"></div>
         <div className="mt-24 flex flex-col lg:flex-row items-center gap-y-12">

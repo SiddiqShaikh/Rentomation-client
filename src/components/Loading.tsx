@@ -1,12 +1,12 @@
 import { ClipLoader } from "react-spinners";
 
-const Loader = ({ size }: { size?: number }) => {
+const Loader = ({ size,color }: { size?: number,color?:string }) => {
   return (
     <ClipLoader
       size={size ?? 15}
       aria-label="Loading Spinner"
       data-testid="loader"
-      color="#FFFFFF"
+      color={color ?? "#FFFFFF"}
     />
   );
 };
