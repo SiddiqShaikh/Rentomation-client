@@ -90,10 +90,10 @@ const RentomationMyHome = () => {
             ) : propertyData && propertyData.length > 0 ? (
               propertyData.map((property: TPropertyListing) =>
                 filter === "All" ? (
-                  <PropertyCard data={property} key={property._id} />
+                  <PropertyCard data={property} key={property._id} myProperty={true} />
                 ) : (
                   property.status === filter && (
-                    <PropertyCard data={property} key={property._id} />
+                    <PropertyCard data={property} key={property._id} myProperty={true} />
                   )
                 )
               )

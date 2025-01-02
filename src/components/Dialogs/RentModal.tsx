@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import useRentModal from "../../hooks/rentModal";
 import Button from "../Button";
@@ -18,10 +18,12 @@ const RentModal = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedArea, setSelectedArea] = useState<any>(null);
-  // const [images, setImages] = useState<string[]>([]);
+  const isEditMode = rentModal.isEditMode;
+  const propertyData = rentModal.propertyData;
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
   } = useForm<FieldValues>({
@@ -52,7 +54,36 @@ const RentModal = () => {
       name: "no",
     },
   ];
+  useEffect(() => {
+    if (isEditMode && propertyData) {
+      Object.keys(propertyData).forEach((key) => {
+        setValue(key as keyof FieldValues, propertyData[key]);
+      });
 
+      // Set city and area details for edit mode
+      if (propertyData?.location) {
+        setSelectedCity(propertyData.city);
+        setSelectedArea({
+          label: propertyData.location.name,
+          lat: propertyData.location.lat,
+          lng: propertyData.location.lng,
+        });
+
+        setValue("location", {
+          name: propertyData.location.name,
+          lat: propertyData.location.lat,
+          lng: propertyData.location.lng,
+        });
+      }
+
+      // Set parking details if available
+      if (propertyData?.parking) {
+        setValue("parking", propertyData.parking);
+      }
+    } else {
+      reset();
+    }
+  }, [isEditMode, propertyData, reset, setValue]);
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true);
     data.location = {
@@ -60,12 +91,22 @@ const RentModal = () => {
       lat: selectedArea?.lat,
       lng: selectedArea?.lng,
     };
+    delete data.ownerDetails;
+    delete data._id;
+    delete data.status;
+    delete data.createdAt;
     console.log(data);
     const token = localStorage.getItem("auth-token");
+    const endpoint = isEditMode
+      ? `property/${propertyData?._id}`
+      : "property/create";
+    const method = isEditMode ? "PUT" : "POST";
+    console.log("endpoint::", endpoint);
+    console.log("method::", method);
     try {
       const response = await apiCall(
-        "property/create",
-        "POST",
+        endpoint,
+        method,
         data,
         {},
         {
@@ -99,7 +140,7 @@ const RentModal = () => {
     lng: item?.lng,
   }));
 
-  const payPer = [
+  const payper = [
     { label: "Per month", value: "mo", key: 0 },
     { label: "per night", value: "night", key: 1 },
   ];
@@ -183,7 +224,7 @@ const RentModal = () => {
           id="payper"
           required
           register={register}
-          options={payPer}
+          options={payper}
           placeholder="Select duration"
           errors={errors}
         />
@@ -204,7 +245,10 @@ const RentModal = () => {
         options={areasOption ?? []}
         placeholder="Select Location"
         errors={errors}
-        onChange={(area) => setSelectedArea(area)}
+        onChange={(area) => {
+          console.log("Selected Area:", area);
+          setSelectedArea(area);
+        }}
       />
       <Checkbox
         id="parking"
@@ -238,7 +282,7 @@ const RentModal = () => {
       />
       <Button
         variant="Primary"
-        label="Create"
+        label={isEditMode ? "Update" : "Create"}
         onClick={handleSubmit(onSubmit)}
       />
     </div>

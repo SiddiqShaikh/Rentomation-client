@@ -8,5 +8,6 @@ export interface ButtonProps {
   onClick?: any;
   loading?: Boolean;
   variant?:'Primary' | 'Secondary'
-  icon?:IconType
+  icon?:IconType;
+  disabled?:boolean
 }

@@ -1,191 +1,364 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import apiCall from "@/utils/api";
+import { Heart, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Container from "../../components/Container";
+import { toast } from "react-toastify";
 
-import img1 from "../../../public/images/prop-five.jpg";
-import img2 from "../../../public/images/prop-four.jpg";
-import img3 from "../../../public/images/prop-one.jpg";
-import Carousel from "../../components/Carousel";
-import PropertyBookingCalendar from "../../components/Calendar";
-import { RiStarSFill } from "react-icons/ri";
-import Button from "../../components/Button";
-import Input from "../../components/Input";
-import { FaRegHeart } from "react-icons/fa";
-import { useState } from "react";
+import { Carousel } from "@/components/Carousel";
+import { differenceInDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
 
-const PropertyDetail = () => {
+interface PropertyData {
+  propertyId: string;
+  propertyName: string;
+  description: string;
+  rent: string;
+  payper: "night" | "month";
+  location: {
+    name: string;
+    lat: number;
+    lng: number;
+  };
+  city: string;
+  images: string[];
+  bed: number;
+  shower: number;
+  parking: boolean;
+  status: string;
+  owner: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+interface BookingData {
+  _id: string;
+  startDateTime: string;
+  endDateTime: string;
+  status: "reserved" | "cancelled" | "booked";
+}
+// Demo booking data
+const demoBookings: BookingData[] = [
+  {
+    _id: "1",
+    startDateTime: "2025-01-01T00:00:00.000Z",
+    endDateTime: "2025-01-03T00:00:00.000Z",
+    status: "booked",
+  },
+  {
+    _id: "2",
+    startDateTime: "2024-12-30T00:31:47.000Z",  // Start of this week
+    endDateTime: "2025-01-05T00:31:47.000Z",    // End of this week
+    status: "reserved",
+  },
+];
+export default function PropertyDetail() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
-  console.log(id);
+  const [property, setProperty] = useState<PropertyData | null>(null);
+  const [bookings, setBookings] = useState<BookingData[]>(demoBookings);
+  const [loading, setLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [totalPrice, setTotalPrice] = useState<Number | undefined>(0);
 
-  const toggleReadMore = () => {
-    setIsExpanded(!isExpanded);
+  // Placeholder images from public folder
+  const placeholderImages = [
+    "/images/prop-one.jpg",
+    "/images/prop-two.jpg",
+    "/images/prop-three.jpg",
+    "/images/prop-four.jpg",
+    "/images/prop-five.jpg",
+  ];
+
+  const getPropertyById = async (id: string) => {
+    setLoading(true); // Set loading state to true
+    const token = localStorage.getItem("auth-token");
+    try {
+      const response = await apiCall(
+        `property/${id}`, // Pass the property ID in the URL
+        "GET",
+        {}, // Empty body for GET request
+        {},
+        {
+          "x-auth-token": `Bearer ${token}`,
+        }
+      );
+      console.log("Property Response:", response);
+      setLoading(false); // Set loading state to false
+      // toast.success(response?.message); // Optionally, you can show a success toast
+      return response.data; // Return the property data from the response
+    } catch (error: any) {
+      toast.error(error?.response?.message); // Show error message in toast
+      setLoading(false); // Set loading state to false
+      console.error("Property error:", error);
+      throw new Error(
+        error?.response?.data?.message || "Failed to fetch property"
+      ); // Throw the error for further handling
+    }
   };
 
-  const slides = [img1, img2, img3];
+  useEffect(() => {
+    const fetchProperty = async () => {
+      if (!id) return;
+      try {
+        const data = await getPropertyById(id);
+        setProperty(data);
+      } catch (error: any) {
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [id]);
+  useEffect(() => {
+    if (dateRange?.from && dateRange?.to && property) {
+      const days = differenceInDays(dateRange.to, dateRange.from) + 1;
+      const pricePerDay = parseInt(property.rent);
+      let total;
+
+      if (property.payper === "night") {
+        total = days * pricePerDay;
+      } else if (property.payper === "month") {
+        total = (days / 30) * pricePerDay;
+      }
+
+      setTotalPrice(total);
+    }
+  }, [dateRange, property]);
+
+  const handleBookingConfirm = () => {
+    // Here you would typically make an API call to confirm the booking
+    console.log("Booking confirmed", { dateRange, totalPrice });
+    setIsModalOpen(false);
+    toast.success("Booking confirmed successfully!");
+  };
+
+  const disabledDates = bookings.flatMap((booking) =>
+    getDatesInRange(
+      new Date(booking.startDateTime),
+      new Date(booking.endDateTime)
+    )
+  );
+
+  function getDatesInRange(startDate: Date, endDate: Date) {
+    const date = new Date(startDate.getTime());
+    const dates = [];
+    while (date <= endDate) {
+      dates.push(new Date(date));
+      date.setDate(date.getDate() + 1);
+    }
+    return dates;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-24 flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!property) {
+    return <div className="min-h-screen pt-24">Property not found</div>;
+  }
+
   return (
     <div className="w-full min-h-screen pt-24 pb-24">
-      {" "}
-      {/* Adjust pt-24 to match Navbar height */}
-      <div className="">
-        <Container>
-          <div className="flex flex-col xl:flex-row items-center gap-4 ">
-            <div className="flex-1 lg:flex-[3] px-2 flex-shrink-0">
-              <div className="text-4xl font-bold ">South View 3</div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-lg font-semibold text-slate-400 ">
-                  Gulshan-e-Iqbal, Karachi{" "}
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col xl:flex-row gap-8">
+          <div className="flex-1 lg:flex-[3]">
+            <div className="mb-6">
+              <h1 className="text-4xl font-bold mb-2">
+                {property.propertyName}
+              </h1>
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <span>{property.location.name}</span>
+                <div className="flex items-center">
+                  {[...Array(4)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-primary" />
+                  ))}
+                  <span className="ml-1">(4.0)</span>
                 </div>
-                <div className="text-lg font-semibold text-slate-400 inline-flex items-center  ">
-                  {" "}
-                  <RiStarSFill />
-                  <RiStarSFill />
-                  <RiStarSFill />
-                  <RiStarSFill /> (4.0)
-                </div>
-              </div>
-              <div className="flex-1 overflow-hidden rounded-lg shadow-md">
-                <Carousel slides={slides} autoSlide={true} />
-              </div>
-              <div className="px-2 mt-6 text-2xl md:text-3xl lg:text-4xl transition-all ease-in-out duration-200 font-semibold">
-                About this property
-              </div>
-              <div className="flex items-center justify-between gap-4 px-2 mt-4 overflow-hidden bg-slate-200 p-4 rounded-md">
-                <div className="flex items-center gap-2 text-sm font-bold justify-center flex-1 ">
-                  <img src="/images/Bed.svg" />
-                  <div>2</div>
-                  <div>Bed</div>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm font-bold justify-center flex-1 ">
-                  <img src="/images/Size.svg" />
-                  <div>240</div>
-                  <div>Size</div>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm font-bold justify-center flex-1 ">
-                  <img src="/images/Shower.svg" />
-                  <div>2</div>
-                  <div>Shower</div>
-                </div>
-                <div className="flex items-center gap-2 text-sm font-bold justify-center flex-1 ">
-                  <img src="/images/Bed.svg" />
-
-                  <div>Parking</div>
-                </div>
-              </div>
-              <div className="px-2 mt-6 text-2xl md:text-3xl lg:text-4xl transition-all ease-in-out duration-200 font-semibold">
-                Description
-              </div>
-              <div>
-                <div
-                  className={`px-2 mt-2 text-[16px] transition-all ease-in-out duration-300 font-normal text-neutral-500 ${
-                    isExpanded ? "" : "line-clamp-2 overflow-hidden"
-                  }`}
-                  style={{
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                  }}
-                >
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Error
-                  nemo libero molestiae excepturi fugit temporibus culpa
-                  voluptatem ullam facere modi fugiat voluptas explicabo,
-                  necessitatibus blanditiis! Delectus saepe quo ad nihil? Lorem
-                  ipsum dolor sit amet consectetur adipisicing elit. Error nemo
-                  libero molestiae excepturi fugit temporibus culpa voluptatem
-                  ullam facere modi fugiat voluptas explicabo, necessitatibus
-                  blanditiis! Delectus saepe quo ad nihil? Lorem ipsum dolor sit
-                  amet consectetur adipisicing elit. Error nemo libero molestiae
-                  excepturi fugit temporibus culpa voluptatem ullam facere modi
-                  fugiat voluptas explicabo, necessitatibus blanditiis! Delectus
-                  saepe quo ad nihil?
-                </div>
-                <button
-                  onClick={toggleReadMore}
-                  className="text-btnPrimary mt-2 hover:underline px-2"
-                >
-                  {isExpanded ? "Read less" : "Read more"}
-                </button>
               </div>
             </div>
-            <div className="flex-1 px-2 ">
-              {/* <PropertyBookingCalendar /> */}
-              <div className="w-full border border-neutral-300 mb-4 rounded-md max-w-[500px] mx-auto">
-                <div className="border-b border-neutral-300 p-4 flex items-center">
-                  <div className=" text-lg font-semibold flex-1">Booking</div>
-                  <div className="text-center text-lg md:text-2xl  text-btnPrimary font-bold lg:hidden">
-                    PKR5000/Night
-                  </div>
-                </div>
-                <div className="px-4 pt-4">Any Special Notes</div>
-                <div className="px-4">
-                  <Input
-                    id="notes"
-                    required={false}
-                    placeholder="special notes.."
-                    containerClass="p-2"
-                  />
-                </div>
-                <div className="px-4 py-4 w-full border-b border-neutral-300">
-                  <PropertyBookingCalendar />
-                </div>
-                <div className="text-center text-2xl px-4 pt-4 text-btnPrimary font-semibold hidden lg:block">
-                  PKR5000/Night
-                </div>
-                <div className="mx-auto w-full max-w-[300px] px-4 py-4">
-                  <Button label="Confirm Booking " className="" />
-                </div>
-                <div className="mx-auto w-full max-w-[300px] px-4 pt-2 py-4">
-                  <Button
-                    label="Save To Wishlist "
-                    // className="bg-transparent !text-btnPrimary border border-btnPrimary !hover:text-white"
-                    variant="Secondary"
-                    icon={FaRegHeart}
-                  />
-                </div>
-              </div>
 
-              <div className="w-full border border-neutral-300 rounded-md max-w-[500px] mx-auto ">
-                <div className="border-b border-neutral-300 p-4 text-lg font-semibold">
-                  THE HOST
-                </div>
-                <div className="flex items-center p-4 gap-2">
-                  <div className="h-14 w-14  rounded-full flex items-center justify-center border border-neutral-200 cursor-pointer">
-                    <img src="/vite.svg" className="object-cover" />
+            <div className="mb-8">
+              <Carousel images={placeholderImages} />
+            </div>
+
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>About this property</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex items-center gap-2">
+                    <img src="/images/Bed.svg" alt="Bed" className="w-6 h-6" />
+                    <span>{property.bed} Bed</span>
                   </div>
-                  <div>
-                    <div className="font-semibold">Emilia Tyler</div>
-                    <div className="text-sm">emilia@gmail.com</div>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/images/Shower.svg"
+                      alt="Shower"
+                      className="w-6 h-6"
+                    />
+                    <span>{property.shower} Shower</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/images/Size.svg"
+                      alt="Size"
+                      className="w-6 h-6"
+                    />
+                    <span>240 Size</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/images/Bed.svg"
+                      alt="Parking"
+                      className="w-6 h-6"
+                    />
+                    <span>{property.parking ? "Yes" : "No"} Parking</span>
                   </div>
                 </div>
-                <div className="px-6">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud
-                </div>
-                <div className="w-full px-4 pt-4 pb-8">
-                  <Button
-                    label="Contact Host "
-                    className=""
-                    variant="Secondary"
-                  />
-                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-semibold">Description</h2>
+              <div
+                className={`text-muted-foreground ${
+                  !isExpanded && "line-clamp-3"
+                }`}
+              >
+                {property.description}
               </div>
-              {/* <div className="w-full pt-8 hidden lg:block">
-                <Button
-                  label="Contact Host "
-                  className=""
-                  variant="Secondary"
-                />
-              </div> */}
+              <Button
+                variant="link"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="p-0 h-auto font-semibold"
+              >
+                {isExpanded ? "Read less" : "Read more"}
+              </Button>
             </div>
           </div>
-        </Container>
 
-        {/*  */}
+          <div className="flex-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>Booking</CardTitle>
+                <div className="text-2xl font-bold text-primary">
+                  PKR {property.rent}/{property.payper}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Special Notes</label>
+                  <Input placeholder="Any special requirements..." />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Select Dates</label>
+                  <Calendar
+                    mode="range"
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    className="rounded-md border"
+                    disabled={disabledDates}
+                    numberOfMonths={2}
+                  />
+                </div>
+
+                <Button
+                  className="w-full"
+                  onClick={() => setIsModalOpen(true)}
+                  disabled={!dateRange?.from || !dateRange?.to}
+                >
+                  Confirm Booking
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <Heart className="w-4 h-4 mr-2" />
+                  Save To Wishlist
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>THE HOST</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                    {property.owner?.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <div>
+                    <div className="font-semibold">Host</div>
+                    <div className="text-sm text-muted-foreground">
+                      {property.owner?.email}
+                    </div>
+                  </div>
+                </div>
+                <Button variant="secondary" className="w-full">
+                  Contact Host
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Booking</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="space-y-2">
+              <Label>Selected Dates</Label>
+              <div>
+                {dateRange?.from && dateRange?.to && (
+                  <>
+                    {format(dateRange.from, "PPP")} -{" "}
+                    {format(dateRange.to, "PPP")}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2 mt-4">
+              <Label>Total Price</Label>
+              <div className="text-2xl font-bold">
+                PKR {totalPrice?.toFixed(2) || 0}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleBookingConfirm}>Confirm Booking</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-};
-
-export default PropertyDetail;
+}

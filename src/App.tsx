@@ -17,6 +17,7 @@ import RentModal from "./components/Dialogs/RentModal";
 
 import "./App.css";
 import PropertyDetail from "./pages/property/propertyDetail";
+import DeleteModal from "./components/Dialogs/deleteModel";
 function App() {
   return (
     <>
@@ -25,11 +26,12 @@ function App() {
         <Navbar />
         <LoginModal />
         <RegisterModal />
+        <DeleteModal />
         <RentModal />
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/property/all" Component={Properties} />
-          <Route path="/property/profile" Component={MyProfile} />
+          <Route path="/profile" Component={MyProfile} />
           <Route path="/property/myproperty" Component={RentomationMyHome} />
           <Route path="/property/detail" Component={PropertyDetail} />
           <Route path="*" element={<NotFound />} />
