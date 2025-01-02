@@ -81,10 +81,10 @@ const SearchRoom = () => {
               selective roommate finder option. We provide you the flexibility
               that you most desire.
             </div>
-            <Button
+            {/* <Button
               label="Search Rooms"
               className="max-w-44 w-full py-4 text-white inline-flex justify-center mt-10 rounded-xl"
-            />
+            /> */}
           </div>
         </div>
       </div>

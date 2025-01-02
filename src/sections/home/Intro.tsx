@@ -13,7 +13,7 @@ const IntroComponent = () => {
               place to live
             </div>
           </div>
-          <div className="lg:flex-1 w-full  px-2 md:px-0">
+          {/* <div className="lg:flex-1 w-full  px-2 md:px-0">
             <div className="max-w-[500px] w-full mx-auto flex ">
               <Input
                 placeholder="Search"
@@ -28,7 +28,7 @@ const IntroComponent = () => {
                 className="max-w-[100px] inline-flex justify-center !rounded-l-none rounded-md py-2"
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </Container>
     );
