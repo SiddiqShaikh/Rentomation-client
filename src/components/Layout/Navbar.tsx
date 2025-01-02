@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
-import { NavbarProps } from "../../types/commonInterface";
-import Button from "../Button";
-import Container from "../Container";
-
+import { useNavigate } from "react-router-dom";
 import useLoginModal from "../../hooks/loginModal";
 import useUserStatus from "../../hooks/userStatus";
+import { NavbarProps } from "../../types/commonInterface";
 import apiCall from "../../utils/api";
+import Button from "../Button";
+import Container from "../Container";
 import Logo from "../Logo";
+
+import { CircleUserRound } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import UserMenu from "./Usermenu";
-import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC<NavbarProps> = () => {
   const loginModal = useLoginModal();
@@ -22,32 +29,34 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   const handleScroll = () => {
     if (window.scrollY > 50) {
-      // Adjust the scroll threshold as needed
       setIsScrolled(true);
     } else {
       setIsScrolled(false);
     }
   };
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   useEffect(() => {
     apiCall("user/profile", "GET", null, null, headers)
-      .then((response) => {
-        console.log("user profile", response);
+      .then(() => {
         userStatus.setUser();
       })
       .catch((err) => {
-        console.log(err);
         userStatus.clearUser();
+        console.error(err);
       });
   }, [token]);
+
   const navigate = useNavigate();
+
   return (
     <div
-      className={`w-full fixed z-[3] text-white shadow-md transition-all ease-in-out duration-300 ${
-        isScrolled ? "bg-black bg-opacity-20" : "bg-black bg-opacity-40"
+      className={`w-full fixed z-[3] text-white top-0 shadow-md transition-all ease-in-out duration-300 ${
+        isScrolled ? "bg-black/80" : "backdrop-blur-md bg-black/20"
       }`}
     >
       <Container>
@@ -56,37 +65,63 @@ const Navbar: React.FC<NavbarProps> = () => {
             <Logo onClick={() => navigate("/")} />
           </div>
           <div className="flex-1 items-center gap-2 md:gap-6 md:flex hidden">
-            <div className="cursor-pointer hover:text-[#0A142F]" onClick={()=>navigate("/")}>Home</div>
-            <div className="cursor-pointer hover:text-[#0A142F]">
+            <div
+              className="cursor-pointer hover:text-neutral-400"
+              onClick={() => navigate("/")}
+            >
+              Home
+            </div>
+            <div className="cursor-pointer hover:text-neutral-400">
               Rentomation
             </div>
-            <div className="cursor-pointer hover:text-[#0A142F]">About</div>
-            <div className="cursor-pointer hover:text-[#0A142F]">Contact</div>
+            <div className="cursor-pointer hover:text-neutral-400">About</div>
+            <div className="cursor-pointer hover:text-neutral-400">Contact</div>
           </div>
           <div className="hidden md:flex">
             {!userStatus.isLoggedIn ? (
               <Button
-                label="Login/Register"
+                label="Login / Register"
                 className="text-white max-w-[200px] py-2"
                 onClick={() => loginModal.onOpen()}
               />
             ) : (
-              <div className="w-full flex gap-2 items-center">
-                <div className="cursor-pointer  hover:text-[#0A142F] text-sm " onClick={()=>navigate('/property/myproperty')}>
-                  Rentomation my home
-                </div>
-                <Button
-                  label="Logout"
-                  className="text-white max-w-[200px] flex-1 py-2"
-                  onClick={() => {
-                    localStorage.removeItem("auth-token");
-                    userStatus.clearUser();
-                  }}
-                />
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <CircleUserRound />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/property/myproperty")}
+                  >
+                    Rentomation my home
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/property/manage-booking")}
+                  >
+                    Manage Booking
+                  </DropdownMenuItem>
+                  {/* <DropdownMenuItem
+                      onClick={() => navigate("/property/myproperty")}
+                    >
+                      My Home
+                    </DropdownMenuItem> */}
+                  <DropdownMenuItem
+                    onClick={() => {
+                      localStorage.removeItem("auth-token");
+                      userStatus.clearUser();
+                    }}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
           <div className="flex md:hidden">
+            {/* User Menu (Mobile) */}
             <UserMenu />
           </div>
         </div>
@@ -94,4 +129,5 @@ const Navbar: React.FC<NavbarProps> = () => {
     </div>
   );
 };
+
 export default Navbar;

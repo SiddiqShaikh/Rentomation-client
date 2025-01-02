@@ -7,7 +7,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   loading,
   variant,
-  icon:Icon
+  icon: Icon,
 }) => {
   return (
     <div
@@ -17,10 +17,10 @@ const Button: React.FC<ButtonProps> = ({
           ? "border border-btnPrimary bg-none items-center text-btnPrimary hover:text-white"
           : "bg-btnPrimary text-white"
       } transition-all duration-700 ease-in-out w-full rounded-xl hover:bg-[#0A142F] ${
-        loading ? "cursor-not-allowed" : "cursor-pointer" 
+        loading ? "cursor-not-allowed" : "cursor-pointer"
       }`}
     >
-      {Icon &&   <Icon size={20} className="" />}
+      {Icon && <Icon size={20} className="" />}
       {loading ? <Loader /> : label}
     </div>
   );

@@ -47,7 +47,8 @@ export type TPropertyListing = {
     updatedAt: string; // ISO 8601 date string
     shower: number;
     parking:boolean;
-    images: [string]
+    images: [string];
+
     // rooms: Room[];
     // address?: Address; // Optional if not always provided
 }
