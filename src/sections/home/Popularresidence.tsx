@@ -48,13 +48,24 @@ const PopularResidence = () => {
             onClick={() => navigate("/property/all")}
           />
         </div>
+
         <div className="mt-16 flex flex-wrap gap-y-24 gap-x-8 justify-center md:justify-start ">
-          {!loading && properties ? (
+          {loading ? (
+            <Loader size={25} color="#000000" />
+          ) : properties?.length > 0 ? (
             properties.map((property: TPropertyListing) => (
               <PropertyCard data={property} key={property._id} />
             ))
           ) : (
-            <Loader size={25} color="#000000" />
+            <div className="text-center py-12 w-full flex items-center justify-center">
+              <img
+                src={"/images/noProperty.png"}
+                alt="not found"
+                width={700}
+                height={700}
+                // className="rounded-full h-6 w-6"
+              />
+            </div>
           )}
         </div>
       </div>

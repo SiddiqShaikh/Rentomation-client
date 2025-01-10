@@ -1,19 +1,17 @@
-import Button from "../../components/Button";
 import Container from "../../components/Container";
-import Input from "../../components/Input";
 
 const IntroComponent = () => {
-    return (
-      <Container>
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-center items-center text-white h-[800px]">
-          <div className="lg:flex-1 px-2 lg:text-start text-center">
-            <div className="w-full max-w-[550px] font-bold text-5xl">
-              Find your next and{" "}
-              <span className="text-btnPrimary">most affortable perfect</span>{" "}
-              place to live
-            </div>
+  return (
+    <Container id="home">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-center items-center text-white h-[800px]">
+        <div className="lg:flex-1 px-2 lg:text-start text-center">
+          <div className="w-full max-w-[550px] font-bold text-5xl">
+            Find your next and{" "}
+            <span className="text-btnPrimary">most affortable perfect</span>{" "}
+            place to live
           </div>
-          {/* <div className="lg:flex-1 w-full  px-2 md:px-0">
+        </div>
+        {/* <div className="lg:flex-1 w-full  px-2 md:px-0">
             <div className="max-w-[500px] w-full mx-auto flex ">
               <Input
                 placeholder="Search"
@@ -29,10 +27,9 @@ const IntroComponent = () => {
               />
             </div>
           </div> */}
-        </div>
-      </Container>
-    );
-  };
+      </div>
+    </Container>
+  );
+};
 
-
-  export default IntroComponent
+export default IntroComponent;

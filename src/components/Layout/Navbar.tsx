@@ -7,6 +7,7 @@ import apiCall from "../../utils/api";
 import Button from "../Button";
 import Container from "../Container";
 import Logo from "../Logo";
+import { Link } from "react-scroll";
 
 import { CircleUserRound } from "lucide-react";
 import {
@@ -65,17 +66,46 @@ const Navbar: React.FC<NavbarProps> = () => {
             <Logo onClick={() => navigate("/")} />
           </div>
           <div className="flex-1 items-center gap-2 md:gap-6 md:flex hidden">
-            <div
+            <Link
+              to="home"
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
               className="cursor-pointer hover:text-neutral-400"
-              onClick={() => navigate("/")}
             >
               Home
-            </div>
-            <div className="cursor-pointer hover:text-neutral-400">
+            </Link>
+            <Link
+              to="rentomation"
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
+              className="cursor-pointer hover:text-neutral-400"
+            >
               Rentomation
-            </div>
-            <div className="cursor-pointer hover:text-neutral-400">About</div>
-            <div className="cursor-pointer hover:text-neutral-400">Contact</div>
+            </Link>
+            <Link
+              to="about"
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
+              className="cursor-pointer hover:text-neutral-400"
+            >
+              About
+            </Link>
+            <Link
+              to="contact"
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
+              className="cursor-pointer hover:text-neutral-400"
+            >
+              Contact
+            </Link>
           </div>
           <div className="hidden md:flex">
             {!userStatus.isLoggedIn ? (

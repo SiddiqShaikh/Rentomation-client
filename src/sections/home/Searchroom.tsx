@@ -1,10 +1,9 @@
 import Masonry from "react-responsive-masonry";
 import Container from "../../components/Container";
-import Button from "../../components/Button";
 
 const SearchRoom = () => {
   return (
-    <Container>
+    <Container id="about">
       <div className="flex flex-col-reverse lg:flex-row my-28 gap-y-4">
         {/* images container */}
         <div className="flex-1">

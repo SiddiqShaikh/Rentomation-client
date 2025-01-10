@@ -9,10 +9,7 @@ import Loader from "../../components/Loading";
 import useRentModal from "../../hooks/rentModal";
 import { TPropertyListing } from "../../types/commonTypes";
 import apiCall from "../../utils/api";
-import {
-  MyproperyFilterOne,
-  MyproperyFilterTwo
-} from "../../utils/mock";
+import { MyproperyFilterOne, MyproperyFilterTwo } from "../../utils/mock";
 
 const RentomationMyHome = () => {
   const rentModal = useRentModal();
@@ -48,6 +45,8 @@ const RentomationMyHome = () => {
   useEffect(() => {
     getMyProperty();
   }, [filter]);
+
+  
   return (
     <div className="w-full min-h-screen pt-24">
       {/* Adjust pt-24 to match Navbar height */}
@@ -90,10 +89,18 @@ const RentomationMyHome = () => {
             ) : propertyData && propertyData.length > 0 ? (
               propertyData.map((property: TPropertyListing) =>
                 filter === "All" ? (
-                  <PropertyCard data={property} key={property._id} myProperty={true} />
+                  <PropertyCard
+                    data={property}
+                    key={property._id}
+                    myProperty={true}
+                  />
                 ) : (
                   property.status === filter && (
-                    <PropertyCard data={property} key={property._id} myProperty={true} />
+                    <PropertyCard
+                      data={property}
+                      key={property._id}
+                      myProperty={true}
+                    />
                   )
                 )
               )

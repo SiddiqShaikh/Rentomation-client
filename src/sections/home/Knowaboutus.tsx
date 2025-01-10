@@ -29,7 +29,7 @@ const data: ICardProps[] = [
 ];
 const KnowAboutUs = () => {
   return (
-    <Container>
+    <Container id="rentomation">
       <div className="my-24">
         <div className="text-2xl md:text-3xl lg:text-4xl font-bold relative transition-all duration-500 ease-in-out">
           Minimum living cost takes care of everything

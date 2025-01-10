@@ -12,12 +12,21 @@ import { GiTakeMyMoney } from "react-icons/gi";
 import Checkbox from "../Checkbox";
 import apiCall from "../../utils/api";
 import { toast } from "react-toastify";
+import { Image, Upload } from "antd";
+import type { GetProp, UploadFile, UploadProps } from "antd";
+import { FaPlus } from "react-icons/fa";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const RentModal = () => {
   const rentModal = useRentModal();
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedArea, setSelectedArea] = useState<any>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+
   const isEditMode = rentModal.isEditMode;
   const propertyData = rentModal.propertyData;
   const {
@@ -60,6 +69,17 @@ const RentModal = () => {
         setValue(key as keyof FieldValues, propertyData[key]);
       });
 
+      if (propertyData?.images?.length > 0) {
+        setFileList(
+          propertyData?.images?.map((image: string, index: number) => ({
+            uid: index,
+            name: `image-${index}`,
+            status: "done",
+            url: image,
+          }))
+        );
+      }
+
       // Set city and area details for edit mode
       if (propertyData?.location) {
         setSelectedCity(propertyData.city);
@@ -82,8 +102,10 @@ const RentModal = () => {
       }
     } else {
       reset();
+      setFileList([]);
     }
   }, [isEditMode, propertyData, reset, setValue]);
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     setLoading(true);
     data.location = {
@@ -95,34 +117,65 @@ const RentModal = () => {
     delete data._id;
     delete data.status;
     delete data.createdAt;
-    console.log(data);
     const token = localStorage.getItem("auth-token");
     const endpoint = isEditMode
       ? `property/${propertyData?._id}`
       : "property/create";
     const method = isEditMode ? "PUT" : "POST";
-    console.log("endpoint::", endpoint);
-    console.log("method::", method);
+
     try {
-      const response = await apiCall(
-        endpoint,
-        method,
-        data,
-        {},
-        {
-          "x-auth-token": `Bearer ${token}`,
+      const uploadedImages = [];
+      if (fileList?.length > 0) {
+        for (const file of fileList) {
+          const formData = new FormData();
+          formData.append("profile", file.originFileObj as Blob);
+
+          const response = await apiCall(
+            "user/upload-picture",
+            "POST",
+            formData,
+            {},
+            {
+              "x-auth-token": `Bearer ${token}`,
+            }
+          );
+
+          uploadedImages.push(response.data);
+          console.log("Image Response:", response);
         }
-      );
-      console.log("Property Response:", response);
-      setLoading(false);
-      toast.success(response?.message);
-      rentModal.onClose();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message);
-      setLoading(false);
-      console.error("Login error:", error);
+      }
+
+      const formatedData = {
+        ...data,
+        images: uploadedImages?.map((image) => image?.url),
+      };
+
+      try {
+        const response = await apiCall(
+          endpoint,
+          method,
+          formatedData,
+          {},
+          {
+            "x-auth-token": `Bearer ${token}`,
+          }
+        );
+        toast.success(response?.message);
+        rentModal.onClose();
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message);
+        console.error("Login error:", error);
+      } finally {
+        setLoading(false);
+        reset();
+        setFileList([]);
+      }
+
+      // return uploadedImages;
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      throw error; // Handle errors as needed
     }
-    reset();
   };
 
   const Cities = PakistanLocations.map((item, key) => ({
@@ -144,20 +197,82 @@ const RentModal = () => {
     { label: "Per month", value: "mo", key: 0 },
     { label: "per night", value: "night", key: 1 },
   ];
-  // const onImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const files = e.target.files;
-  //   if (files && files.length > 0) {
-  //     setLoading(true);
-  //     const uploadedImages = await Promise.all(
-  //       Array.from(files).map((file) => uploadImageToCloudinary(file))
-  //     );
-  //     setImages((prev) => [...prev, ...uploadedImages]);
-  //     setLoading(false);
-  //   }
-  // };
+
+  const getBase64 = (file: FileType): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+
+  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    const formatedData = newFileList.map((file) => {
+      return {
+        ...file,
+        status: "done",
+      };
+    });
+
+    setFileList(formatedData as UploadFile[]);
+  };
+
+  const uploadButton = (
+    <button
+      className="border-none bg-none flex items-center justify-center flex-col"
+      type="button"
+    >
+      <FaPlus />
+      <div className="mt-2">Upload Image</div>
+    </button>
+  );
 
   const bodyContent = (
     <div className="flex flex-col space-y-4">
+      <div className="flex items-center justify-center">
+        <Upload
+          action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+          listType="picture-card"
+          fileList={fileList}
+          onPreview={handlePreview}
+          onChange={handleChange}
+          accept=".png, .jpg, .jpeg"
+          beforeUpload={(file) => {
+            if (
+              file.type !== "image/png" &&
+              file.type !== "image/jpeg" &&
+              file.type !== "image/jpg"
+            ) {
+              toast.error("You can only upload image file!");
+
+              return false;
+            }
+          }}
+        >
+          {fileList.length >= 8 ? null : uploadButton}
+        </Upload>
+        {previewImage && (
+          <Image
+            wrapperStyle={{ display: "none" }}
+            preview={{
+              visible: previewOpen,
+              onVisibleChange: (visible) => setPreviewOpen(visible),
+              afterOpenChange: (visible) => !visible && setPreviewImage(""),
+            }}
+            src={previewImage}
+          />
+        )}
+      </div>
+
       <Input
         placeholder="Property title"
         name="title"
@@ -229,6 +344,7 @@ const RentModal = () => {
           errors={errors}
         />
       </div>
+
       <Select
         id="city"
         required
@@ -257,17 +373,17 @@ const RentModal = () => {
         label="Parking"
         options={CheckboxOption}
       />
-      {/* <input
-      type="file"
-      multiple
-      onChange={onImageUpload}
-      disabled={loading}
-    />
-    <div className="flex flex-wrap gap-2">
-      {images.map((image, index) => (
-        <img key={index} src={image} alt="Uploaded Image" className="w-16 h-16 object-cover" />
-      ))}
-    </div> */}
+      {/* <input type="file" multiple onChange={onImageUpload} disabled={loading} />
+      <div className="flex flex-wrap gap-2">
+        {images.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            alt="Uploaded Image"
+            className="w-16 h-16 object-cover"
+          />
+        ))}
+      </div> */}
     </div>
   );
   const footerContent = (
@@ -279,11 +395,14 @@ const RentModal = () => {
           rentModal.onClose();
           reset();
         }}
+        disabled={loading}
       />
       <Button
         variant="Primary"
         label={isEditMode ? "Update" : "Create"}
         onClick={handleSubmit(onSubmit)}
+        loading={loading}
+        disabled={loading}
       />
     </div>
   );

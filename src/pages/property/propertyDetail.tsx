@@ -62,8 +62,8 @@ const demoBookings: BookingData[] = [
   },
   {
     _id: "2",
-    startDateTime: "2024-12-30T00:31:47.000Z",  // Start of this week
-    endDateTime: "2025-01-05T00:31:47.000Z",    // End of this week
+    startDateTime: "2024-12-30T00:31:47.000Z", // Start of this week
+    endDateTime: "2025-01-05T00:31:47.000Z", // End of this week
     status: "reserved",
   },
 ];
@@ -129,6 +129,7 @@ export default function PropertyDetail() {
 
     fetchProperty();
   }, [id]);
+
   useEffect(() => {
     if (dateRange?.from && dateRange?.to && property) {
       const days = differenceInDays(dateRange.to, dateRange.from) + 1;
@@ -145,11 +146,35 @@ export default function PropertyDetail() {
     }
   }, [dateRange, property]);
 
-  const handleBookingConfirm = () => {
-    // Here you would typically make an API call to confirm the booking
-    console.log("Booking confirmed", { dateRange, totalPrice });
-    setIsModalOpen(false);
-    toast.success("Booking confirmed successfully!");
+  const handleBookingConfirm = async () => {
+    const formatedData = {
+      propertyId: property?.propertyId,
+      startDateTime: dateRange?.from,
+      endDateTime: dateRange?.to,
+    };
+    const token = localStorage.getItem("auth-token");
+
+    try {
+      const response = await apiCall(
+        "booking/bookings",
+        "POST",
+        formatedData,
+        {},
+        {
+          "x-auth-token": `Bearer ${token}`,
+        }
+      );
+
+      console.log(response, "response");
+
+      toast.success("Booking confirmed successfully!");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
+      setIsModalOpen(false);
+    }
   };
 
   const disabledDates = bookings.flatMap((booking) =>
@@ -202,7 +227,7 @@ export default function PropertyDetail() {
             </div>
 
             <div className="mb-8">
-              <Carousel images={placeholderImages} />
+              <Carousel images={property?.images} />
             </div>
 
             <Card className="mb-8">
@@ -271,10 +296,10 @@ export default function PropertyDetail() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <label className="text-sm font-medium">Special Notes</label>
                   <Input placeholder="Any special requirements..." />
-                </div>
+                </div> */}
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Select Dates</label>
@@ -295,10 +320,10 @@ export default function PropertyDetail() {
                 >
                   Confirm Booking
                 </Button>
-                <Button variant="outline" className="w-full">
+                {/* <Button variant="outline" className="w-full">
                   <Heart className="w-4 h-4 mr-2" />
                   Save To Wishlist
-                </Button>
+                </Button> */}
               </CardContent>
             </Card>
 
