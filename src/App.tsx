@@ -20,8 +20,10 @@ import PropertyDetail from "./pages/property/propertyDetail";
 import DeleteModal from "./components/Dialogs/deleteModel";
 import Message from "./pages/Message";
 import ManageBooking from "./pages/property/ManageBooking";
+import { useState } from "react";
 
 function App() {
+  const [isAddProperty, setIsAddProperty] = useState(false);
   return (
     <>
       <Router>
@@ -30,12 +32,20 @@ function App() {
         <LoginModal />
         <RegisterModal />
         <DeleteModal />
-        <RentModal />
+        <RentModal setIsAddProperty={setIsAddProperty} />
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/property/all" Component={Properties} />
           <Route path="/profile" Component={MyProfile} />
-          <Route path="/property/myproperty" Component={RentomationMyHome} />
+          <Route
+            path="/property/myproperty"
+            element={
+              <RentomationMyHome
+                isAddProperty={isAddProperty}
+                setIsAddProperty={setIsAddProperty}
+              />
+            }
+          />
           <Route path="/property/detail" Component={PropertyDetail} />
           <Route path="/property/manage-booking" Component={ManageBooking} />
           <Route path="/messages" Component={Message} />
@@ -43,7 +53,7 @@ function App() {
           {/* <Route path="/about"  />
         <Route path="/contact" /> */}
         </Routes>
-        <Footer />
+        {/* <Footer /> */}
       </Router>
     </>
   );

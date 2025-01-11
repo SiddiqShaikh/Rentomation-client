@@ -11,13 +11,20 @@ import { TPropertyListing } from "../../types/commonTypes";
 import apiCall from "../../utils/api";
 import { MyproperyFilterOne, MyproperyFilterTwo } from "../../utils/mock";
 
-const RentomationMyHome = () => {
+const RentomationMyHome = ({
+  isAddProperty,
+  setIsAddProperty,
+}: {
+  isAddProperty: boolean;
+  setIsAddProperty: (value: boolean) => void;
+}) => {
   const rentModal = useRentModal();
 
   const [filter, setFilter] = useState("All");
   const [sortFilter, setSortFilter] = useState("newest");
   const [loading, setLoading] = useState(false);
   const [propertyData, setPropertyData] = useState<any[]>([]);
+
   const getMyProperty = async () => {
     setLoading(true);
     const token = localStorage.getItem("auth-token");
@@ -38,15 +45,15 @@ const RentomationMyHome = () => {
     } catch (error: any) {
       toast.error(error?.response?.message);
       setLoading(false);
+      setIsAddProperty(false);
       console.error("Property error:", error);
     }
   };
 
   useEffect(() => {
     getMyProperty();
-  }, [filter]);
+  }, [filter, isAddProperty]);
 
-  
   return (
     <div className="w-full min-h-screen pt-24">
       {/* Adjust pt-24 to match Navbar height */}

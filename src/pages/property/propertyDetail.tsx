@@ -68,6 +68,8 @@ const demoBookings: BookingData[] = [
   },
 ];
 export default function PropertyDetail() {
+  const token = localStorage.getItem("auth-token");
+
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [property, setProperty] = useState<PropertyData | null>(null);
@@ -77,15 +79,13 @@ export default function PropertyDetail() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalPrice, setTotalPrice] = useState<Number | undefined>(0);
+  const [isUser, setIsUser] = useState(null);
+  const [propertyLoading, setPropertyLoading] = useState(true);
+  const [disabledDatess, setDisabledDatess] = useState<Date[]>([]);
+  const [isAlreadyBooked, setIsAlreadyBooked] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
 
-  // Placeholder images from public folder
-  const placeholderImages = [
-    "/images/prop-one.jpg",
-    "/images/prop-two.jpg",
-    "/images/prop-three.jpg",
-    "/images/prop-four.jpg",
-    "/images/prop-five.jpg",
-  ];
+  const IsOnwer = property?.owner?.id === isUser?._id;
 
   const getPropertyById = async (id: string) => {
     setLoading(true); // Set loading state to true
@@ -114,21 +114,95 @@ export default function PropertyDetail() {
     }
   };
 
+  const getPropertyByPropertyId = async (id: string) => {
+    setPropertyLoading(true); // Set loading state to true
+    const token = localStorage.getItem("auth-token");
+    try {
+      const response = await apiCall(
+        `booking/bookings/property/${id}`,
+        "GET",
+        {},
+        {},
+        {
+          "x-auth-token": `Bearer ${token}`,
+        }
+      );
+      console.log("Property Response:", response);
+      setPropertyLoading(false);
+      return response.bookings; // Return the property data from the response
+    } catch (error: any) {
+      toast.error(error?.response?.message); // Show error message in toast
+      setPropertyLoading(false);
+      throw new Error(
+        error?.response?.data?.message || "Failed to fetch property"
+      ); // Throw the error for further handling
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem("auth-token");
+
+    const headers = {
+      "x-auth-token": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    try {
+      const response = await apiCall(
+        "user/profile",
+        "GET",
+        null,
+        null,
+        headers
+      );
+      const userData = response.data;
+      setIsUser(userData);
+
+      setLoading(false);
+    } catch (error) {
+      toast.error("Failed to fetch user profile");
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
       try {
         const data = await getPropertyById(id);
+        const datas = await getPropertyByPropertyId(data.propertyId);
+
+        const isOnwerExist = datas.find(
+          (booking: any) =>
+            booking.user === isUser?._id && booking.status === "reserved"
+        );
+
+        setIsAlreadyBooked(isOnwerExist);
+
+        const disabledDates = datas.flatMap((booking: any) =>
+          getDatesInRange(
+            new Date(booking.startDateTime),
+            new Date(booking.endDateTime)
+          )
+        );
+
+        setDisabledDatess(disabledDates);
+
         setProperty(data);
       } catch (error: any) {
         toast.error(error.message);
       } finally {
         setLoading(false);
+        setIsAdd(false);
       }
     };
 
     fetchProperty();
-  }, [id]);
+  }, [id, isUser, isAdd]);
 
   useEffect(() => {
     if (dateRange?.from && dateRange?.to && property) {
@@ -165,9 +239,8 @@ export default function PropertyDetail() {
         }
       );
 
-      console.log(response, "response");
-
       toast.success("Booking confirmed successfully!");
+      setIsAdd(true);
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
       console.error("Login error:", error);
@@ -176,13 +249,6 @@ export default function PropertyDetail() {
       setIsModalOpen(false);
     }
   };
-
-  const disabledDates = bookings.flatMap((booking) =>
-    getDatesInRange(
-      new Date(booking.startDateTime),
-      new Date(booking.endDateTime)
-    )
-  );
 
   function getDatesInRange(startDate: Date, endDate: Date) {
     const date = new Date(startDate.getTime());
@@ -194,7 +260,7 @@ export default function PropertyDetail() {
     return dates;
   }
 
-  if (loading) {
+  if (loading || propertyLoading) {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center">
         Loading...
@@ -205,6 +271,8 @@ export default function PropertyDetail() {
   if (!property) {
     return <div className="min-h-screen pt-24">Property not found</div>;
   }
+
+  console.log(isAlreadyBooked, "isAlreadyBooked");
 
   return (
     <div className="w-full min-h-screen pt-24 pb-24">
@@ -308,17 +376,30 @@ export default function PropertyDetail() {
                     selected={dateRange}
                     onSelect={setDateRange}
                     className="rounded-md border"
-                    disabled={disabledDates}
+                    disabled={disabledDatess}
                     numberOfMonths={2}
                   />
                 </div>
 
                 <Button
                   className="w-full"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    if (IsOnwer) {
+                      toast.error("You can't book your own property");
+                      return;
+                    } else if (
+                      isAlreadyBooked &&
+                      isAlreadyBooked.status === "reserved"
+                    ) {
+                      toast.error("You have already booked this property");
+                      return;
+                    } else {
+                      setIsModalOpen(true);
+                    }
+                  }}
                   disabled={!dateRange?.from || !dateRange?.to}
                 >
-                  Confirm Booking
+                  {"Confirm Booking"}
                 </Button>
                 {/* <Button variant="outline" className="w-full">
                   <Heart className="w-4 h-4 mr-2" />

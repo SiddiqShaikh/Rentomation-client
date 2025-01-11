@@ -18,7 +18,11 @@ import { FaPlus } from "react-icons/fa";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-const RentModal = () => {
+const RentModal = ({
+  setIsAddProperty,
+}: {
+  setIsAddProperty: (value: boolean) => void;
+}) => {
   const rentModal = useRentModal();
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedCity, setSelectedCity] = useState<string>("");
@@ -29,6 +33,7 @@ const RentModal = () => {
 
   const isEditMode = rentModal.isEditMode;
   const propertyData = rentModal.propertyData;
+
   const {
     register,
     handleSubmit,
@@ -51,6 +56,7 @@ const RentModal = () => {
       payper: "",
     },
   });
+
   const CheckboxOption = [
     {
       value: "yes",
@@ -63,6 +69,7 @@ const RentModal = () => {
       name: "no",
     },
   ];
+
   useEffect(() => {
     if (isEditMode && propertyData) {
       Object.keys(propertyData).forEach((key) => {
@@ -89,16 +96,15 @@ const RentModal = () => {
           lng: propertyData.location.lng,
         });
 
-        setValue("location", {
-          name: propertyData.location.name,
-          lat: propertyData.location.lat,
-          lng: propertyData.location.lng,
-        });
+        // const filterData = Areas?.areas?.find((item) => {
+        //   return item?.name === propertyData.location.name;
+        // });
+        // setValue("location", filterData);
       }
 
       // Set parking details if available
       if (propertyData?.parking) {
-        setValue("parking", propertyData.parking);
+        setValue("parking", propertyData.parking ? "yes" : "no");
       }
     } else {
       reset();
@@ -123,10 +129,12 @@ const RentModal = () => {
       : "property/create";
     const method = isEditMode ? "PUT" : "POST";
 
+    const isNewImage = fileList?.filter((file) => file?.originFileObj);
+
     try {
       const uploadedImages = [];
-      if (fileList?.length > 0) {
-        for (const file of fileList) {
+      if (isNewImage?.length > 0) {
+        for (const file of isNewImage) {
           const formData = new FormData();
           formData.append("profile", file.originFileObj as Blob);
 
@@ -141,13 +149,18 @@ const RentModal = () => {
           );
 
           uploadedImages.push(response.data);
-          console.log("Image Response:", response);
         }
       }
 
+      uploadedImages.push(...fileList);
+
+      const imageData = uploadedImages
+        ?.filter((image) => image?.url) // Filters out null and undefined URLs
+        .map((image) => image.url); // Maps to the URL
+
       const formatedData = {
         ...data,
-        images: uploadedImages?.map((image) => image?.url),
+        images: imageData?.filter((image) => image !== undefined), // Removes undefined values
       };
 
       try {
@@ -162,6 +175,7 @@ const RentModal = () => {
         );
         toast.success(response?.message);
         rentModal.onClose();
+        setIsAddProperty(true);
       } catch (error: any) {
         toast.error(error?.response?.data?.message);
         console.error("Login error:", error);
@@ -185,6 +199,7 @@ const RentModal = () => {
   }));
 
   const Areas = PakistanLocations.find((item) => item.city === selectedCity);
+
   const areasOption = Areas?.areas?.map((item, key) => ({
     label: item?.name,
     value: item?.name,
@@ -354,7 +369,8 @@ const RentModal = () => {
         errors={errors}
         onChange={(event) => setSelectedCity(event.value)}
       />
-      <Select
+
+      {/* <Select
         id="location"
         required
         register={register}
@@ -362,10 +378,10 @@ const RentModal = () => {
         placeholder="Select Location"
         errors={errors}
         onChange={(area) => {
-          console.log("Selected Area:", area);
           setSelectedArea(area);
         }}
-      />
+      /> */}
+
       <Checkbox
         id="parking"
         required

@@ -56,7 +56,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   return (
     <div
-      className={`w-full fixed z-[3] text-white top-0 shadow-md transition-all ease-in-out duration-300 ${
+      className={`w-full fixed z-[3] text-white top-0 shadow-md transition-all ease-in-out duration-300  ${
         isScrolled ? "bg-black/80" : "backdrop-blur-md bg-black/20"
       }`}
     >
@@ -73,6 +73,7 @@ const Navbar: React.FC<NavbarProps> = () => {
               offset={-70}
               duration={500}
               className="cursor-pointer hover:text-neutral-400"
+              onClick={() => navigate("/")}
             >
               Home
             </Link>

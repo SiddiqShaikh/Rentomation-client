@@ -33,7 +33,6 @@ const LoginModal = () => {
     setLoading(true);
     try {
       const response = await apiCall("user/login", "POST", data);
-      console.log("Login successful:", response);
       localStorage.setItem("auth-token", response.token);
       setLoading(false);
       toast.success(response?.message);
