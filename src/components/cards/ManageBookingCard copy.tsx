@@ -66,8 +66,6 @@ const ManageBookingCard: React.FC<any> = ({ data, booking, setIsAdd }) => {
     }
   };
 
-  console.log(booking, "bookingbooking");
-
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

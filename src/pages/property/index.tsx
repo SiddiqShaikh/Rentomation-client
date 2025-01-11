@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { TPropertyListing } from "@/types/commonTypes";
 import apiCall from "@/utils/api";
+import { Select as AntdSelect } from "antd";
 
 interface FilterState {
   page: number;
@@ -39,11 +40,28 @@ export default function Properties() {
     sortType: "desc",
     sortBy: "createdAt",
   });
+  const [search, setSearch] = useState("");
+  const [searchData, setSearchData] = useState({
+    title: "",
+    city: "",
+    location: "",
+    rent: "",
+  });
 
   const getAllProperties = async (params: FilterState) => {
     setLoading(true);
+
     try {
-      const response = await apiCall("property/get-all", "GET", {}, params, {});
+      const searchData = search !== null && search !== "";
+      const response = await apiCall(
+        searchData
+          ? `property/get-all?query=${searchData}`
+          : `property/get-all`,
+        "GET",
+        {},
+        params,
+        {}
+      );
       if (response.success) {
         setPropertyData(response.data.docs);
         setTotalPages(Math.ceil(response.data.totalDocs / params.limit));
@@ -67,7 +85,49 @@ export default function Properties() {
 
   useEffect(() => {
     getAllProperties(filters);
-  }, [filters]);
+  }, []);
+
+  const citiesOptions = [
+    { label: "Islamabad", value: "Islamabad" },
+    { label: "Lahore", value: " Lahore" },
+    { label: "Karachi", value: "Karachi" },
+    { label: "Peshawar", value: "Peshawar" },
+    { label: "Quetta", value: "Quetta" },
+  ];
+
+  const locationOptions = [
+    { label: "G-11", value: "G-11" },
+    { label: "G-10", value: "G-10" },
+    { label: "G-9", value: "G-9" },
+    { label: "G-8", value: "G-8" },
+    { label: "G-7", value: "G-7" },
+  ];
+
+  const rendOptions = [
+    { label: "10000", value: "10000" },
+    { label: "20000", value: "20000" },
+    { label: "30000", value: "30000" },
+    { label: "40000", value: "40000" },
+    { label: "50000", value: "50000 " },
+  ];
+
+  const handleSearch = () => {
+    if (search !== "") {
+      getAllProperties({});
+    }
+
+    const filterData = propertyData.filter((item) => {
+      return (
+        item.city?.toLowerCase().includes(searchData.city.toLowerCase()) &&
+        item?.location
+          .toLowerCase()
+          .includes(searchData.location.toLowerCase()) &&
+        item.rent.toString().includes(searchData.rent.toString())
+      );
+    });
+
+    console.log(filterData, "filterData");
+  };
 
   return (
     <div className="w-full min-h-screen pt-24">
@@ -103,36 +163,82 @@ export default function Properties() {
 
           <Card className="mb-8">
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    placeholder="Search by title..."
+                    placeholder="Search by AI..."
                     className="pl-10"
-                    onChange={(e) => debouncedSearch("title", e.target.value)}
+                    onChange={(e) => setSearch(e.target.value)}
+                    // onChange={(e) => debouncedSearch("title", e.target.value)}
                   />
                 </div>
                 <div>
-                  <Input
+                  {/* <Input
                     placeholder="Search by city..."
                     onChange={(e) => debouncedSearch("city", e.target.value)}
+                  /> */}
+
+                  <AntdSelect
+                    placeholder="Search by city..."
+                    // onChange={(value) => debouncedSearch("city", value)}
+                    onChange={(value) =>
+                      setSearchData((prev) => ({
+                        ...prev,
+                        city: value,
+                      }))
+                    }
+                    options={citiesOptions}
+                    // style={{ width: "250px" }}
+                    size="large"
+                    className="w-full"
                   />
                 </div>
                 <div>
-                  <Input
+                  {/* <Input
                     placeholder="Search by location..."
                     onChange={(e) =>
                       debouncedSearch("location", e.target.value)
                     }
+                  /> */}
+
+                  <AntdSelect
+                    placeholder="Search by location..."
+                    onChange={(value) =>
+                      setSearchData((prev) => ({
+                        ...prev,
+                        location: value,
+                      }))
+                    }
+                    options={locationOptions}
+                    size="large"
+                    className="w-full"
                   />
                 </div>
                 <div>
-                  <Input
+                  <AntdSelect
+                    placeholder="Search by rent..."
+                    onChange={(value) =>
+                      setSearchData((prev) => ({
+                        ...prev,
+                        rent: value,
+                      }))
+                    }
+                    options={rendOptions}
+                    size="large"
+                    className="w-full"
+                  />
+                  {/* <Input
                     placeholder="Search by rent..."
                     type="number"
                     onChange={(e) => debouncedSearch("rent", e.target.value)}
-                  />
+                  /> */}
                 </div>
+
+                <Button onClick={handleSearch}>
+                  <Search className="mr-2" />
+                  Search
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -146,10 +252,10 @@ export default function Properties() {
                 />
               ))}
             </div>
-          ) : propertyData.length > 0 ? (
+          ) : propertyData?.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
-                {propertyData.map((property) => (
+                {propertyData?.map((property) => (
                   <PropertyCard key={property._id} data={property} />
                 ))}
               </div>

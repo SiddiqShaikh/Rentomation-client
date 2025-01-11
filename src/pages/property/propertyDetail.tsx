@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import apiCall from "@/utils/api";
 import { Heart, Star } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { Carousel } from "@/components/Carousel";
@@ -69,6 +69,8 @@ const demoBookings: BookingData[] = [
 ];
 export default function PropertyDetail() {
   const token = localStorage.getItem("auth-token");
+
+  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -272,8 +274,6 @@ export default function PropertyDetail() {
     return <div className="min-h-screen pt-24">Property not found</div>;
   }
 
-  console.log(isAlreadyBooked, "isAlreadyBooked");
-
   return (
     <div className="w-full min-h-screen pt-24 pb-24">
       <div className="container mx-auto px-4">
@@ -424,7 +424,13 @@ export default function PropertyDetail() {
                     </div>
                   </div>
                 </div>
-                <Button variant="secondary" className="w-full">
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => {
+                    navigate(`/messages?${property.owner.id}`);
+                  }}
+                >
                   Contact Host
                 </Button>
               </CardContent>
