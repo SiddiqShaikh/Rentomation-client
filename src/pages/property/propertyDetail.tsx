@@ -408,33 +408,35 @@ export default function PropertyDetail() {
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>THE HOST</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                    {property.owner?.email?.[0]?.toUpperCase() || "U"}
-                  </div>
-                  <div>
-                    <div className="font-semibold">Host</div>
-                    <div className="text-sm text-muted-foreground">
-                      {property.owner?.email}
+            {!IsOnwer && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>THE HOST</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                      {property.owner?.email?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <div>
+                      <div className="font-semibold">Host</div>
+                      <div className="text-sm text-muted-foreground">
+                        {property.owner?.email}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <Button
-                  variant="secondary"
-                  className="w-full"
-                  onClick={() => {
-                    navigate(`/messages?${property.owner.id}`);
-                  }}
-                >
-                  Contact Host
-                </Button>
-              </CardContent>
-            </Card>
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => {
+                      navigate(`/messages?${property.owner.id}`);
+                    }}
+                  >
+                    Contact Host
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
